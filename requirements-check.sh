@@ -3,12 +3,12 @@
 
 export LANG=en
 echo "Checking basic requirements"
-builtin type -P awk || echo "We need awk command installed and in the user PATH"
-builtin type -P curl || echo "We need curl command installed and in the user PATH" 
-builtin type -P docker || echo "We need docker installed and in the user PATH"
-builtin type -P free  || echo "We need free command installed and in the user PATH"
-builtin type -P kubectl || echo "We need kubectl installed and in the user PATH"
-builtin type -P lscpu || echo "We need lscpu command installed and in the user PATH"
+builtin type -P awk > /dev/null || echo "We need awk command installed and in the user PATH. FAIL."
+builtin type -P curl > /dev/null || echo "We need curl command installed and in the user PATH. FAIL." 
+builtin type -P docker > /dev/null || echo "We need docker installed and in the user PATH. FAIL."
+builtin type -P free  > /dev/null || echo "We need free command installed and in the user PATH. FAIL."
+builtin type -P kubectl > /dev/null || echo "We need kubectl installed and in the user PATH. FAIL."
+builtin type -P lscpu > /dev/null || echo "We need lscpu command installed and in the user PATH. FAIL."
 
 echo "Checking hardware specs"
 lscpu | awk -F: '/^CPU max MHz:/ { mhz=$2 } /^CPU\(s\):/{cores=$2} END { if (cores -2 < 0) print "Not enough cores. At least 2 cores needed. \n"; else printf "Enought cores: %i - OK. \n", cores; if (mhz - 1999 <1) printf "Not enough clock. Minimum required is 2000, measured: %d \n", mhz; else printf "Enough clock speed: %d Mhz - OK. \n", mhz } '
