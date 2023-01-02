@@ -8,7 +8,6 @@ TESTS=$(builtin type -P awk > /dev/null || echo "We need awk command installed a
 builtin type -P curl > /dev/null || echo "We need curl command installed and in the user PATH. FAIL."; \
 builtin type -P docker > /dev/null || echo "We need docker installed and in the user PATH. FAIL."; \
 builtin type -P free  > /dev/null || echo "We need free command installed and in the user PATH. FAIL."; \
-builtin type -P pipoca  > /dev/null || echo "We need pipoca command installed and in the user PATH. FAIL."; \
 builtin type -P kubectl > /dev/null || echo "We need kubectl installed and in the user PATH. FAIL."; \
 builtin type -P lscpu > /dev/null || echo "We need lscpu command installed and in the user PATH. FAIL." )
 
