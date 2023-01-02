@@ -12,14 +12,21 @@ export LANG=en
 #if [[ "$TEST_SUDO" == *"FAIL." ]]; then
 #	FAIL=1
 #fi
+#builtin type -P docker > /dev/null || echo "We need docker installed and in the user PATH. FAIL."; \
+#builtin type -P kubectl > /dev/null || echo "We need kubectl installed and in the user PATH. FAIL."; \
 
 echo "Checking basic requirements"
 TESTS=$(builtin type -P awk > /dev/null || echo "We need awk command installed and in the user PATH. FAIL."; \
 builtin type -P curl > /dev/null || echo "We need curl command installed and in the user PATH. FAIL."; \
-builtin type -P docker > /dev/null || echo "We need docker installed and in the user PATH. FAIL."; \
 builtin type -P free  > /dev/null || echo "We need free command installed and in the user PATH. FAIL."; \
-builtin type -P kubectl > /dev/null || echo "We need kubectl installed and in the user PATH. FAIL."; \
 builtin type -P lscpu > /dev/null || echo "We need lscpu command installed and in the user PATH. FAIL." )
+
+echo $TESTS
+if [[ "$TESTS" == *"FAIL"* ]]; then
+	FAIL=1
+else
+	echo "basic commands found. OK"
+fi
 
 # 500GB = 524288000 kilobytes
 TEST_AVAILABLE_SPACE=$(df --output=avail,source -k  | sort -u | awk 'BEGIN{a=0}{ if ($1>a) a=$1+0; source=$2;} END {if (a < 524288000) printf "Not enough disk space. There`s only %d (kilobytes) available. FAIL.", a; else printf "There is at least one partition with enough disk space for installation: %s", source}')
@@ -30,20 +37,15 @@ if [[ "$TEST_AVAILABLE_SPACE" == *"FAIL." ]]; then
 	FAIL=1
 fi
 
-echo $TESTS
-if [[ "$TESTS" == *"FAIL"* ]]; then
-	FAIL=1
-else
-	echo "basic commands found. OK"
-fi
 
 echo "Checking hardware specs"
-TEST_CPU=$(lscpu | awk -F: '/^CPU max MHz:/ { mhz=$2 } /^CPU\(s\):/{cores=$2} END { if (cores -2 < 0) print "Not enough cores. At least 2 cores needed. \n"; else printf "Enought cores: %i - OK. \n", cores; if (mhz - 1999 <1) printf "Not enough clock. Minimum required is 2000, measured: %d \n", mhz; else printf "Enough clock speed: %d Mhz - OK. \n", mhz } ')
+TEST_CPU=$(lscpu | awk -F: '/^CPU max MHz:/ { mhz=$2 } /^CPU\(s\):/{cores=$2} END { if (cores -2 < 0) print "Not enough cores. At least 2 cores needed. \n"; else printf "Enought cores: %i - OK. \n", cores; if (mhz < 2600) printf "Not enough clock. Minimum required is 2600, measured: %d \n", mhz; else printf "Enough clock speed: %d Mhz - OK. \n", mhz } ')
 echo $TEST_CPU
 if [[ "$TEST_CPU" == *"FAIL." ]]; then
 	FAIL=1
 fi
 
+# pegar memoria disponivel
 TEST_MEM=$(free --giga | awk -F' ' '/^Mem:/ {total=$2} END { if (total < 16) printf "Not enough total memory. 16GB is the minimun requirement. Memory found: %d FAIL.\n", total; else printf "Total memory: %s - OK. \n", total ; exit total < 16}')
 echo $TEST_MEM
 if [[ "$TEST_MEM" == *"FAIL." ]]; then
