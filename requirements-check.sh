@@ -3,14 +3,15 @@
 
 FAIL=0
 export LANG=en
-echo "Checking for superuser permission"
 
-TEST_SUDO=$(sudo -l || echo "User must have superuser privilege on target machine. FAIL.")
-echo "$TEST_SUDO"
-
-if [[ "$TEST_SUDO" == *"FAIL." ]]; then
-	FAIL=1
-fi
+# many distros dont have sudo installed by default 
+#echo "Checking for superuser permission"
+#TEST_SUDO=$(sudo -l || echo "User must have superuser privilege on target machine. FAIL.")
+#echo "$TEST_SUDO"
+#
+#if [[ "$TEST_SUDO" == *"FAIL." ]]; then
+#	FAIL=1
+#fi
 
 echo "Checking basic requirements"
 TESTS=$(builtin type -P awk > /dev/null || echo "We need awk command installed and in the user PATH. FAIL."; \
