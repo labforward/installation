@@ -21,6 +21,15 @@ builtin type -P free  > /dev/null || echo "We need free command installed and in
 builtin type -P kubectl > /dev/null || echo "We need kubectl installed and in the user PATH. FAIL."; \
 builtin type -P lscpu > /dev/null || echo "We need lscpu command installed and in the user PATH. FAIL." )
 
+# 500GB = 524288000 kilobytes
+TEST_AVAILABLE_SPACE=$(df --output=avail,source -k  | sort -u | awk 'BEGIN{a=0}{ if ($1>a) a=$1+0; source=$2;} END {if (a < 524288000) printf "Not enough disk space. There`s only %d (kilobytes) available. FAIL.", a; else printf "There is at least one partition with enough disk space for installation: %s", source}')
+
+echo $TEST_AVAILABLE_SPACE
+
+if [[ "$TEST_AVAILABLE_SPACE" == *"FAIL." ]]; then
+	FAIL=1
+fi
+
 echo $TESTS
 if [[ "$TESTS" == *"FAIL"* ]]; then
 	FAIL=1
@@ -84,6 +93,11 @@ if [[ "TEST_K8S_GCR" == *"FAIL." ]]; then
 	FAIL=1
 fi
 
+[ -e /proc/version ] && echo "These are the contents of /proc/version:" && cat /proc/version
+[ -f /etc/os-release ] && echo "These are the contents of /etc/os-release:" && cat /etc/os-release
+[ -f /etc/issue ] && echo "These are the contents of /etc/issue:" && cat /etc/issue
+echo "These are the contents of /etc/*release:" && cat /etc/*release 
+
 if test $FAIL -ne 0 
 then
 	echo "One or more requirement tests failed !";
@@ -91,3 +105,4 @@ then
 else
 	echo "This system has the minimal requirements for installation ";
 fi
+
