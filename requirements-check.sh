@@ -1,5 +1,6 @@
 #!/bin/env bash
-# RUN ME $> bash <(curl -sL <<URL>> ) > report.txt
+# RUN ME $> bash <(curl -sL https://raw.githubusercontent.com/labforward/installation/main/requirements-check.sh ) > report.txt
+# RUN ME in docker image $> docker run -it <IMAGE_NAME>:<TAG> bash -c "bash <(curl -sL https://raw.githubusercontent.com/labforward/installation/main/requirements-check.sh )"
 
 FAIL=0
 export LANG=en
