@@ -7,6 +7,7 @@ It can be run directly on physical machines, docker images or docker containers.
 
 
 # Using this script
+Target system must have bash and curl in order for the script to work.
 
 
 # Download and execute
