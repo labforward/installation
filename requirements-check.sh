@@ -40,7 +40,7 @@ fi
 
 
 echo "Checking hardware specs"
-TEST_CPU_CORES=$(lscpu | awk -F: '/^CPU\(s\):/{cores=$2} END { if (cores -2 < 0) print "Not enough cores. At least 2 cores needed. \n"; else printf "Enought cores: %i - OK. \n", cores; } ')
+TEST_CPU_CORES=$(lscpu | awk -F: 'IGNORECASE = 1;/^CPU\(s\):/{cores=$2} END { if (cores -2 < 0) print "Not enough cores. At least 2 cores needed. \n"; else printf "Enought cores: %i - OK. \n", cores; } ')
 echo $TEST_CPU_CORES
 if [[ "$TEST_CPU_CORES" == *"FAIL." ]]; then
 		FAIL=1
@@ -49,12 +49,7 @@ fi
 TEST_CPU_CLOCK=$(lscpu | awk -F: 'IGNORECASE = 1;/MHz:/ { mhz=$2 } IGNORECASE = 1;/max MHz:/ {max=$2 } END { if (max > mhz) mhz = max; if (mhz < 2600) printf "Not enough clock. Minimum required is 2600, measured: %d \n", mhz; else printf "Enough clock speed: %d Mhz - OK. \n", mhz } ')
 echo $TEST_CPU_CLOCK
 if [[ "$TEST_CPU_CLOCK" == *"FAIL." ]]; then
-	# Maybe we can use another tool..
-	# Detected 3892.467 MHz processor
-	TEST_CPU_CLOCK_ALTERNATIVE=$(sudo dmesg | grep MHz | grep Detected | awk -F" " '/^Detected/{mhz=$2;} END  )
-	if [[ "$TEST_CPU_CLOCK_ALTERNATIVE" == *"FAIL." ]]; then
-		FAIL=1
-	fi
+	FAIL=1
 fi
 
 # pegar memoria disponivel
