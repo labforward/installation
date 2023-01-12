@@ -40,13 +40,13 @@ fi
 
 
 echo "Checking hardware specs"
-TEST_CPU_CORES=$(lscpu | awk -F: 'IGNORECASE = 1;/^CPU\(s\):/{cores=$2} END { if (cores -2 < 0) print "Not enough cores. At least 2 cores needed. \n"; else printf "Enought cores: %i - OK. \n", cores; } ')
+TEST_CPU_CORES=$(lscpu 2>/dev/null| awk -F: 'IGNORECASE = 1;/^CPU\(s\):/{cores=$2} END { if (cores -2 < 0) print "Not enough cores. At least 2 cores needed. \n"; else printf "Enought cores: %i - OK. \n", cores; } ' | grep -i cores)
 echo $TEST_CPU_CORES
 if [[ "$TEST_CPU_CORES" == *"FAIL." ]]; then
 		FAIL=1
 fi
 
-TEST_CPU_CLOCK=$(lscpu | awk -F: 'IGNORECASE = 1;/MHz:/ { mhz=$2 } IGNORECASE = 1;/max MHz:/ {max=$2 } END { if (max > mhz) mhz = max; if (mhz < 2600) printf "Not enough clock. Minimum required is 2600, measured: %d \n", mhz; else printf "Enough clock speed: %d Mhz - OK. \n", mhz } ')
+TEST_CPU_CLOCK=$(lscpu 2>/dev/null| awk -F: 'IGNORECASE = 1;/MHz:/ { mhz=$2 } IGNORECASE = 1;/max MHz:/ {max=$2 } END { if (max > mhz) mhz = max; if (mhz < 2600) printf "Not enough clock. Minimum required is 2600, measured: %d Mhz\n", mhz; else printf "Enough clock speed: %d Mhz - OK. \n", mhz } ' | grep -i Mhz)
 echo $TEST_CPU_CLOCK
 if [[ "$TEST_CPU_CLOCK" == *"FAIL." ]]; then
 	FAIL=1
@@ -101,6 +101,9 @@ echo $TEST_K8S_GCR
 if [[ "TEST_K8S_GCR" == *"FAIL." ]]; then
 	FAIL=1
 fi
+
+echo "DF"
+df -h
 
 [ -e /proc/version ] && echo "These are the contents of /proc/version:" && cat /proc/version
 [ -f /etc/os-release ] && echo "These are the contents of /etc/os-release:" && cat /etc/os-release
