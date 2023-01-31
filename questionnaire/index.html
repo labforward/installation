@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <link rel="icon" href="<%= BASE_URL %>favicon.ico" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/@picocss/pico@latest/css/pico.min.css"
+    />
+    <link rel="stylesheet" href="pico.questionnaire.css" />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/fetch/3.6.2/fetch.js"
+      integrity="sha512-20FZL4lG1jTZXPeMkblgj4b/fsXASK5aW87Tm7Z5QK9QmmYleVGM0NlS9swfb6XT8yrFTAWkq3QfnMe7MKIX8A=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <title>App</title>
+    <script type="application/javascript">
+      const view = {
+        state: {
+          regulation_requirements: false,
+          cloud_based: false,
+          customer_smtp: false,
+          migrate: false,
+          labfolder_labregister: false,
+          laboperator: false,
+        },
+        show: function (id) {
+          var obj = typeof id == "object" ? id : document.getElementById(id);
+          if (obj) {
+            obj.classList.remove("laq-hidden");
+          }
+        },
+        hide: function (id) {
+          var obj = typeof id == "object" ? id : document.getElementById(id);
+          if (obj) {
+            obj.classList.add("laq-hidden");
+          }
+        },
+        enable: function (id) {
+          var obj = document.getElementById(id);
+          if (obj) {
+            obj.removeAttribute("disabled");
+          }
+        },
+        disable: function (id) {
+          var obj = document.getElementById(id);
+          if (obj) {
+            obj.setAttribute("disabled", "disabled");
+          }
+        },
+        isChecked: function (fieldId) {
+          const field =
+            typeof id == "object" ? fieldId : document.getElementById(fieldId);
+          return field && field.checked == true;
+        },
+        showHideMigrations: function () {
+          const labels = document.querySelectorAll(
+            'label[for^="env.products-to-migrate."]'
+          );
+          for (var i = 0; i < labels.length; ++i) {
+            var migration = labels[i].dataset.migration;
+            if (migration) {
+              if (view.state.migrate) {
+                view.show(labels[i]);
+              } else {
+                view.hide(labels[i]);
+              }
+            }
+          }
+        },
+      };
+
+      const google_form = {
+        map_fields: [
+          {
+            name: "customer.name",
+            entry: "entry.2030448881",
+          },
+          {
+            name: "installation.cloud-based",
+            entry: "entry.787604697",
+          },
+          {
+            name: "installation.on-premise",
+            entry: "entry.66890138",
+          },
+          {
+            name: "regulation.no-special-requirements",
+            entry: "entry.29705575",
+          },
+          {
+            name: "regulation.gxp-operation",
+            entry: "entry.677748823",
+          },
+          {
+            name: "products-to-install.labfolder-labregister",
+            entry: "entry.890529400",
+          },
+          {
+            name: "products-to-install.laboperator",
+            entry: "entry.1168075067",
+          },
+          {
+            name: "products-to-install.laboperator-workflow-editor",
+            entry: "entry.2137074645",
+          },
+          {
+            name: "products-to-install.connector-manager",
+            entry: "entry.569243513",
+          },
+          {
+            name: "products-to-migrate.none",
+            entry: "entry.1803285821",
+          },
+          {
+            name: "products-to-migrate.labfolder-labregister",
+            entry: "entry.907467583",
+          },
+          {
+            name: "products-to-migrate.laboperator",
+            entry: "entry.48913136",
+          },
+          {
+            name: "products-to-migrate.laboperator-workflow-editor",
+            entry: "entry.319096810",
+          },
+          {
+            name: "products-to-migrate.connector-manager",
+            entry: "entry.2112004302",
+          },
+          {
+            name: "networking.public",
+            entry: "entry.1402728233",
+          },
+          {
+            name: "networking.private",
+            entry: "entry.1329908872",
+          },
+          {
+            name: "domain.use-customer-domain",
+            entry: "entry.1846490650",
+          },
+          {
+            name: "domain.use-labfoward-domain",
+            entry: "entry.1714575381",
+          },
+          {
+            name: "identity-provider.use-labforward-identity-provider",
+            entry: "entry.667719526",
+          },
+          {
+            name: "identity-provider.use-customer-identity-provider",
+            entry: "entry.86164800",
+          },
+          {
+            name: "email.use-customer-smtp",
+            entry: "entry.1635487152",
+          },
+          {
+            name: "email.use-labforward-smtp",
+            entry: "entry.1277583182",
+          },
+          {
+            name: "regulation.gxp-operation",
+            entry: "entry.1026285104",
+          },
+          {
+            name: "cloud.aws.region",
+            entry: "entry.1591949914",
+          },
+          {
+            name: "cloud.aws.account.name",
+            entry: "entry.1403459674",
+          },
+          {
+            name: "domain.labfolder-labregister.primary.fqdn",
+            entry: "entry.1241608360",
+          },
+          {
+            name: "domain.laboperator.primary.fqdn",
+            entry: "entry.904791097",
+          },
+          {
+            name: "domain.labfolder-labregister.secondary.fqdn",
+            entry: "entry.1308652127",
+          },
+          {
+            name: "domain.laboperator.secondary.fqdn",
+            entry: "entry.1609277239",
+          },
+        ],
+      };
+
+      const laq = {
+        ready: function () {
+          const fields = document.querySelectorAll(".hidden-until-ready");
+          for (var i = 0; i < fields.length; ++i) {
+            fields[i].classList.remove("hidden-until-ready");
+          }
+          const envFields = document.querySelectorAll('input[id^="env."]');
+          for (var i = 0; i < envFields.length; ++i) {
+            envFields[i].addEventListener("change", laq.validate);
+          }
+          document.getElementById("send").addEventListener("click", function(event){
+            event.preventDefault();
+            laq.gDocSubmit();
+          });
+          laq.validate();
+        },
+        validate: function () {
+          if (view.isChecked("env.regulation.no-special-requirements")) {
+            view.state.regulation_requirements = false;
+          } else {
+            view.state.regulation_requirements = true;
+          }
+
+          if (view.isChecked("env.email.use-customer-smtp")) {
+            view.state.customer_smtp = true;
+          } else {
+            view.state.customer_smtp = false;
+          }
+          if (view.isChecked("env.installation.cloud-based")) {
+            view.state.cloud_based = true;
+          } else if (view.isChecked("env.installation.on-premise")) {
+            view.state.cloud_based = false;
+          } else {
+            view.state.cloud_based = null;
+          }
+
+          if (view.isChecked("env.products-to-migrate.none")) {
+            view.state.migrate = false;
+          } else {
+            view.state.migrate = true;
+          }
+
+          if (view.isChecked("env.products-to-install.labfolder-labregister")) {
+            view.state.labfolder_labregister = true;
+          } else if (
+            view.isChecked("env.products-to-migrate.labfolder-labregister")
+          ) {
+            view.state.labfolder_labregister = true;
+          } else {
+            view.state.labfolder_labregister = false;
+          }
+
+          if (view.isChecked("env.products-to-install.laboperator")) {
+            view.state.laboperator = true;
+          } else if (view.isChecked("env.products-to-migrate.laboperator")) {
+            view.state.laboperator = true;
+          } else {
+            view.state.laboperator = false;
+          }
+
+          laq.render();
+        },
+        render: function () {
+          if (view.state.cloud_based) {
+            view.show("env.installation-plan");
+            view.show("env.cloud.aws");
+          } else {
+            view.hide("env.installation-plan");
+            if (null == view.state.cloud_based) {
+              view.hide("env.cloud.aws");
+            } else {
+              view.hide("env.cloud.aws");
+            }
+          }
+
+          view.showHideMigrations();
+
+          if (view.state.regulation_requirements) {
+            view.show("env.domain.secondary.fqdns");
+          } else {
+            view.hide("env.domain.secondary.fqdns");
+          }
+
+          if (view.state.laboperator) {
+            view.show("env.domain.laboperator.primary.fqdn.label");
+            view.show("env.domain.laboperator.secondary.fqdn.label");
+          } else {
+            view.hide("env.domain.laboperator.primary.fqdn.label");
+            view.hide("env.domain.laboperator.secondary.fqdn.label");
+          }
+
+          if (view.state.labfolder_labregister) {
+            view.show("env.domain.labfolder-labregister.primary.fqdn.label");
+            view.show("env.domain.labfolder-labregister.secondary.fqdn.label");
+          } else {
+            view.hide("env.domain.labfolder-labregister.primary.fqdn.label");
+            view.hide("env.domain.labfolder-labregister.secondary.fqdn.label");
+          }
+
+          if (view.state.labfolder_labregister || view.state.laboperator) {
+            view.show("env.domain.domain-strategy");
+            view.show("env.domain.fqdn");
+          } else {
+            view.hide("env.domain.domain-strategy");
+            view.hide("env.domain.fqdn");
+          }
+
+          if (view.state.customer_smtp) {
+            view.show("env.email.customer.smtp");
+          } else {
+            view.hide("env.email.customer.smtp");
+          }
+
+          if (
+            view.isChecked(
+              "env.identity-provider.use-customer-identity-provider"
+            )
+          ) {
+            view.show(
+              "env.identity-provider.use-customer-identity-provider.warning"
+            );
+          } else {
+            view.hide(
+              "env.identity-provider.use-customer-identity-provider.warning"
+            );
+          }
+
+          laq.prepareSubmit();
+        },
+        prepareSubmit: function () {
+          var payload = "";
+          for (var i = 0; i < google_form.map_fields.length; i++) {
+            var google_field = google_form.map_fields[i];
+            var fieldId = "env." + google_field.name;
+            var field = document.getElementById(fieldId);
+            if (field) {
+              console.log(field.value);
+              payload += google_field.entry + "=" + field.value + "&";
+            }
+          }
+          return payload ; //+ "dlut=1675193745227&fvv=1&partialResponse=%5Bnull%2Cnull%2C%22-1448081039679947237%22%5D&pageHistory=0&fbzx=-1448081039679947237";
+        },
+        receive: function (response) {
+          console.log("Response:");
+          console.log(response);
+        },
+        gDocSubmit: function () {
+          const testURL =
+          "https://docs.google.com/forms/u/0/d/e/1FAIpQLSfgs68axF-RitfY5jgbl9YwhcqTaZiJo91leVeY5MeALe0ZWw/formResponse";
+
+          var payload = laq.prepareSubmit();
+
+          const myInit = {
+            method: "POST",
+            mode: "no-cors",
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+              'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8'
+            },
+            body: payload
+          };
+
+
+          const myRequest = new Request(testURL, myInit);
+
+          fetch(myRequest)
+            .then(function (response) {
+              console.log(response);
+              return response;
+            })
+            .then(function (response) {
+              console.log(response);
+            })
+            .catch(function (e) {
+              console.log(e);
+            });
+        },
+      };
+      document.addEventListener("DOMContentLoaded", function (event) {
+        laq.ready();
+        window.submit = laq.submit;
+        window.fetchsubmit = laq.fetchsubmit;
+      });
+    </script>
+  </head>
+  <body>
+    <noscript>
+      <strong
+        >We're sorry but this page doesn't work properly without JavaScript
+        enabled. Please enable it to continue.</strong
+      >
+    </noscript>
+    <main class="container laq">
+      <aside class="no-print">
+        <nav>
+          <details>
+            <summary><a href="#overview">Overview</a></summary>
+          </details>
+          <details>
+            <summary><a href="#questionnaire">Questionnaire</a></summary>
+          </details>
+          <details>
+            <summary><a href="#configuration">Configuration</a></summary>
+          </details>
+          <details>
+            <summary>
+              <a href="#env.installation-plan">Installation plan</a>
+            </summary>
+          </details>
+        </nav>
+      </aside>
+      <div role="document">
+        <section id="overview">
+          <h2>Overview</h2>
+        </section>
+        <form>
+          <section id="questionnaire" class="hidden-until-ready">
+            <h2>Questionnaire</h2>
+
+            <h3>Customer</h3>
+            <section id="env.customer">
+              customer name:
+              <label for="env.customer.name"
+                ><input type="text" id="env.customer.name"
+              /></label>
+            </section>
+
+            <section id="env.installation.type">
+              <label for="env.installation.type">
+                <h3>Installation type</h3>
+                <label for="env.installation.cloud-based">
+                  <input
+                    id="env.installation.cloud-based"
+                    name="env.installation.type.choice"
+                    type="radio"
+                    value="yes"
+                  />
+                  Cloud installation
+                </label>
+                <label for="env.installation.on-premise">
+                  <input
+                    id="env.installation.on-premise"
+                    name="env.installation.type.choice"
+                    type="radio"
+                    value="yes"
+                  />
+                  On premise installation
+                </label>
+              </label>
+            </section>
+
+            <section id="env.regulation">
+              <h3>Regulatory Requirements</h3>
+              <label for="env.regulation">
+                Do you need a validated environment?
+              </label>
+              <label for="env.regulation.no-special-requirements">
+                <input
+                  type="radio"
+                  name="env.regulation"
+                  id="env.regulation.no-special-requirements"
+                  value="yes"
+                />
+                No, we don't have regulatory requirements
+              </label>
+              <label for="env.regulation.gxp-operation"
+                ><input
+                  type="radio"
+                  name="env.regulation"
+                  id="env.regulation.gxp-operation"
+                  value="yes"
+                />Yes, we operate under GxP</label
+              >
+            </section>
+
+            <h3>Products</h3>
+            <label for="env.products-to-install" data-placement="left"
+              >Which products will be used in the environment?</label
+            >
+            <section id="env.products-to-install">
+              <label
+                for="env.products-to-install.labfolder-labregister"
+                data-placement="left"
+              >
+                <input
+                  type="checkbox"
+                  value="yes"
+                  id="env.products-to-install.labfolder-labregister"
+                />
+                Labfolder/Labregister
+              </label>
+              <label for="env.products-to-install.laboperator">
+                <input
+                  type="checkbox"
+                  value="yes"
+                  id="env.products-to-install.laboperator"
+                />
+                Laboperator
+              </label>
+              <label for="env.products-to-install.laboperator-workflow-editor">
+                <input
+                  type="checkbox"
+                  value="yes"
+                  class="sub-checkbox"
+                  id="env.products-to-install.laboperator-workflow-editor"
+                />
+                Laboperator Workflow Editor
+              </label>
+              <label for="env.products-to-install.connector-manager">
+                <input
+                  type="checkbox"
+                  value="yes"
+                  class="sub-checkbox"
+                  id="env.products-to-install.connector-manager"
+                />
+                Connector Manager (Mender)</label
+              >
+            </section>
+
+            <section id="env.products-to-migrate">
+              <h3>Migration</h3>
+              <label for="env.products-to-migrate"
+                >Is there an existing installation of Labforward products? If
+                so, which products will require a data migration to the new
+                environment?
+              </label>
+              <label for="env.products-to-migrate.none">
+                <input
+                  type="checkbox"
+                  value="yes"
+                  id="env.products-to-migrate.none"
+                />
+                No data migration needed
+              </label>
+              <label
+                data-migration="true"
+                for="env.products-to-migrate.labfolder-labregister"
+              >
+                <input
+                  type="checkbox"
+                  value="yes"
+                  id="env.products-to-migrate.labfolder-labregister"
+                />
+                Labfolder/Labregister
+              </label>
+              <label
+                data-migration="true"
+                for="env.products-to-migrate.laboperator"
+              >
+                <input
+                  type="checkbox"
+                  value="yes"
+                  id="env.products-to-migrate.laboperator"
+                />
+                Laboperator
+              </label>
+              <label
+                data-migration="true"
+                for="env.products-to-migrate.laboperator-workflow-editor"
+              >
+                <input
+                  type="checkbox"
+                  value="yes"
+                  class="sub-checkbox"
+                  id="env.products-to-migrate.laboperator-workflow-editor"
+                />
+                Laboperator Workflow Editor
+              </label>
+              <label
+                data-migration="true"
+                for="env.products-to-migrate.connector-manager"
+              >
+                <input
+                  type="checkbox"
+                  value="yes"
+                  class="sub-checkbox"
+                  id="env.products-to-migrate.connector-manager"
+                />
+                Connector Manager (Mender)</label
+              >
+            </section>
+
+            <section id="env.networking">
+              <h3>Networking and Domain</h3>
+              <label for="env.networking">
+                How should administrators and users access the System?
+              </label>
+              <label for="env.networking.public">
+                <input type="checkbox" id="env.networking.public" value="yes" />
+                Domain in the public internet
+              </label>
+              <label for="env.networking.private">
+                <input
+                  type="checkbox"
+                  id="env.networking.private"
+                  value="yes"
+                />
+                Domain only accessible from a customer virtual private network
+                (VPN)
+              </label>
+            </section>
+
+            <section id="env.domain.domain-strategy">
+              <h3>Domain name</h3>
+              <blockquote>
+                The Labforward Suite requires multiple subdomains for different
+                products, e.g., laboperator.prod.company.com and
+                labfolder.prod.company.com. The shared domain of one environment
+                is referred to as the platform domain, e.g. prod.company.com in
+                the above example. In the case of multiple environments, domain
+                level separation is recommended to avoid conflicts, e.g.
+                laboperator.prod.company.com and laboperator.test.company.com.
+                You can choose the subdomain, domain, and TLD values (subject to
+                availability).
+              </blockquote>
+              <label for="env.domain.domain-strategy"
+                >Do you want an installation under your own domain?</label
+              >
+              <label for="env.domain.labfoward-domain"
+                ><input
+                  type="checkbox"
+                  id="env.domain.labfoward-domain"
+                  value="yes"
+                />Labforward domain (e.g. *.company.labforward.com)</label
+              >
+              <label for="env.domain.customer-domain"
+                ><input
+                  type="checkbox"
+                  id="env.domain.customer-domain"
+                  value="yes"
+                />Customer domain (e.g. *.labforward.company.com)</label
+              >
+            </section>
+
+            <section id="env.domain.fqdn">
+              <label for="env.domain.fqdn">
+                Under which domain would you like to host your dedicated
+                cloud?</label
+              >
+              <label
+                id="env.domain.labfolder-labregister.primary.fqdn.label"
+                for="env.domain.labfolder-labregister.primary.fqdn"
+                data-tooltip="You can omit the https:// part"
+                data-placement="left"
+              >
+                FQDN for Labfolder-Labregister (primary-cluster):
+                <input
+                  type="text"
+                  placeholder="https://labfolder.{prod.}company.com"
+                  id="env.domain.labfolder-labregister.primary.fqdn"
+                />
+              </label>
+              <label
+                id="env.domain.laboperator.primary.fqdn.label"
+                for="env.domain.laboperator.primary.fqdn"
+                data-tooltip="You can omit the https:// part"
+                data-placement="left"
+              >
+                FQDN for Laboperator (primary-cluster):
+                <input
+                  type="text"
+                  placeholder="https://laboperator.{prod.}company.com"
+                  id="env.domain.laboperator.primary.fqdn"
+                />
+              </label>
+
+              <div id="env.domain.secondary.fqdns">
+                <label
+                  id="env.domain.labfolder-labregister.secondary.fqdn.label"
+                  for="env.domain.labfolder-labregister.secondary.fqdn"
+                  data-tooltip="You can omit the https:// part"
+                  data-placement="left"
+                >
+                  FQDN for Labfolder-Labregister (secondary-cluster):
+                  <input
+                    type="text"
+                    placeholder="https://labfolder.{test.}company.com"
+                    id="env.domain.labfolder-labregister.secondary.fqdn"
+                  />
+                </label>
+
+                <label
+                  id="env.domain.laboperator.secondary.fqdn.label"
+                  for="env.domain.laboperator.secondary.fqdn"
+                  data-tooltip="You can omit the https:// part"
+                  data-placement="left"
+                >
+                  FQDN for Laboperator (secondary-cluster):
+                  <input
+                    type="text"
+                    placeholder="https://laboperator.{test.}company.com"
+                    id="env.domain.laboperator.secondary.fqdn"
+                  />
+                </label>
+              </div>
+              <label id="env.domain.customer-domain-certificates">
+                <blockquote>
+                  The customer has to provide valid certificates for the
+                  selected domains. Options to provide certificates are
+                  <ol>
+                    <li>
+                      <mark
+                        >by automated certificate provisioning via cert-manager
+                        and Let's Encrypt;</mark
+                      >
+                    </li>
+                    <li><mark>or by providing cert files manually.</mark></li>
+                  </ol>
+                </blockquote>
+              </label>
+            </section>
+
+            <h3>Identity Provider</h3>
+            <label for="env.identity-provider"
+              >Do you want to integrate an external identity provider (e.g.
+              Azure AD)?</label
+            >
+
+            <section id="env.identity-provider.identity-provider-strategy">
+              <label
+                for="env.identity-provider.use-labforward-identity-provider"
+                ><input
+                  type="checkbox"
+                  id="env.identity-provider.use-labforward-identity-provider"
+                />Use Labforward identity and access management</label
+              >
+              <label for="env.identity-provider.use-customer-identity-provider"
+                ><input
+                  type="checkbox"
+                  id="env.identity-provider.use-customer-identity-provider"
+                />Use a custom identity provider</label
+              >
+
+              <label
+                id="env.identity-provider.use-customer-identity-provider.warning"
+              >
+                The customer has to provide all relevant information for the
+                integration of the identity provider.
+                <blockquote>
+                  "Different identity providers will require different
+                  information during the configuration. As part of the
+                  installation plan, a joined session for this configuration
+                  will be scheduled. Attendance of customer IT with the required
+                  knowledge and privileges will be needed."
+                </blockquote>
+              </label>
+            </section>
+
+            <h3>Emails</h3>
+            <label for="env.email"
+              >Do you want to use your own email servers?</label
+            >
+            <section id="env.email">
+              <label for="env.email.use-labforward-smtp"
+                ><input
+                  type="radio"
+                  name="env.email.use-labforward-smtp.choice"
+                  id="env.email.use-labforward-smtp"
+                  value="yes"
+                />No, use Labforward email server</label
+              >
+              <label for="env.email.use-customer-smtp"
+                ><input
+                  type="radio"
+                  name="env.email.use-labforward-smtp.choice"
+                  id="env.email.use-customer-smtp"
+                  value="yes"
+                />Yes, use own email server</label
+              >
+              <label id="env.email.customer.smtp" class="laq-hidden">
+                <h4>Email Server</h4>
+                The customer has to provide email server configuration.
+                <blockquote>
+                  SMTP server configuration usually consists of host,
+                  credentials, TLS settings, and email adresses used for sending
+                  emails. As part of the installation plan, a joined session for
+                  this configuration will be scheduled. Attendance of customer
+                  IT with the required knowledge and privileges will be needed.
+                </blockquote>
+              </label>
+            </section>
+          </section>
+
+          <h3>Configuration</h3>
+          <section id="configuration" class="hidden-until-ready">
+            <section id="env.cloud.aws">
+              <h3>Cloud Infrastructure</h3>
+              <label for="env.cloud.aws"
+                >In which AWS region would you like to deploy your dedicated
+                cloud?</label
+              >
+              <label for="env.cloud.aws.region"
+                ><select id="env.cloud.aws.region">
+                  <option value="af-south-1">af-south-1</option>
+                  <option value="ap-east-1">ap-east-1</option>
+                  <option value="ap-northeast-1">ap-northeast-1</option>
+                  <option value="ap-northeast-2">ap-northeast-2</option>
+                  <option value="ap-northeast-3">ap-northeast-3</option>
+                  <option value="ap-south-1">ap-south-1</option>
+                  <option value="ap-south-2">ap-south-2</option>
+                  <option value="ap-southeast-1">ap-southeast-1</option>
+                  <option value="ap-southeast-2">ap-southeast-2</option>
+                  <option value="ap-southeast-3">ap-southeast-3</option>
+                  <option value="ca-central-1">ca-central-1</option>
+                  <option value="eu-central-1">eu-central-1</option>
+                  <option value="eu-central-2">eu-central-2</option>
+                  <option value="eu-north-1">eu-north-1</option>
+                  <option value="eu-south-1">eu-south-1</option>
+                  <option value="eu-south-2">eu-south-2</option>
+                  <option value="eu-west-1">eu-west-1</option>
+                  <option value="eu-west-2">eu-west-2</option>
+                  <option value="eu-west-3">eu-west-3</option>
+                  <option value="me-central-1">me-central-1</option>
+                  <option value="me-south-1">me-south-1</option>
+                  <option value="sa-east-1">sa-east-1</option>
+                  <option value="us-east-1">us-east-1</option>
+                  <option value="us-east-2">us-east-2</option>
+                  <option value="us-west-1">us-west-1</option>
+                  <option value="us-west-2">us-west-2</option>
+                </select></label
+              >
+              <small
+                >For further information on AWS regions see:<br />
+                <a
+                  href="https://aws.amazon.com/about-aws/global-infrastructure/regions_az"
+                  >https://aws.amazon.com/about-aws/global-infrastructure/regions_az</a
+                >.</small
+              >
+
+              <label for="env.cloud.aws.account">
+                <section id="env.cloud.aws.account">
+                  <label for="env.cloud.aws.account.name"
+                    ><input
+                      type="text"
+                      id="env.cloud.aws.account.name"
+                      placeholder="aws-acct-customer"
+                  /></label>
+                </section>
+              </label>
+
+              <label for="env.cloud.aws.primary-cluster">
+                <h3>Primary Cluster: Initial dedicated AWS resources</h3>
+                <section id="env.cloud.aws.primary-cluster">
+                  <small
+                    >All resource allocations are initial values and will be
+                    increased by Labforward based on demand. There are no
+                    additional costs with increased resources beyond the fees
+                    mentioned in your contract. Specifically, memory and
+                    computation resources are covered by license fees as the
+                    installation scales. Storage might be limited based on your
+                    contract conditions.</small
+                  >
+                  <table>
+                    <thead>
+                      <tr>
+                        <th scope="col">Resource</th>
+                        <th scope="col">Service</th>
+                        <th scope="col">Total</th>
+                        <th scope="col">Unit</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <th scope="row">Nodes</th>
+                        <td>
+                          <a
+                            href="https://aws.amazon.com/pt/ec2/instance-types/t3/"
+                            target="_blank"
+                            >t3-xlarge</a
+                          >
+                        </td>
+                        <td>3</td>
+                        <td>quantity of nodes</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">Memory</th>
+                        <td>16 GB RAM per node</td>
+                        <td>48</td>
+                        <td>GB</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">CPUs</th>
+                        <td>2 AMD64 per node</td>
+                        <td>6</td>
+                        <td>CPU core</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">Block Storage</th>
+                        <td>GP2 Storage</td>
+                        <td>250</td>
+                        <td>GB</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">Object Storage</th>
+                        <td>S3</td>
+                        <td>dynamic</td>
+                        <td>GB</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </section>
+              </label>
+
+              <label for="env.cloud.aws.secondary-cluster">
+                <h3>Secondary Cluster: Initial dedicated AWS resources</h3>
+                <section id="env.cloud.aws.secondary-cluster">
+                  <small
+                    >Only required for validated installations that require a
+                    dedicated development and validation environment that is
+                    separate from the production cluster. All resource
+                    allocations are initial values and will be increased by
+                    Labforward based on demand. There are no additional costs
+                    with increased resources beyond the fees mentioned in your
+                    contract. Specifically, memory and computation resources are
+                    covered by license fees as the installation scales. Storage
+                    might be limited based on your contract conditions.</small
+                  >
+                  <table>
+                    <thead>
+                      <tr>
+                        <th scope="col">Resource</th>
+                        <th scope="col">Service</th>
+                        <th scope="col">Total</th>
+                        <th scope="col">Unit</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <th scope="row">Nodes</th>
+                        <td>
+                          <a
+                            href="https://aws.amazon.com/pt/ec2/instance-types/t3/"
+                            target="_blank"
+                            >t3-xlarge</a
+                          >
+                        </td>
+                        <td>3</td>
+                        <td>quantity of nodes</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">Memory</th>
+                        <td>16 GB RAM per node</td>
+                        <td>48</td>
+                        <td>GB</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">CPUs</th>
+                        <td>2 AMD64 per node</td>
+                        <td>6</td>
+                        <td>CPU core</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">Block Storage</th>
+                        <td>GP2 Storage</td>
+                        <td>250</td>
+                        <td>GB</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">Object Storage</th>
+                        <td>S3</td>
+                        <td>dynamic</td>
+                        <td>GB</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </section>
+              </label>
+            </section>
+          </section>
+
+          <section id="env.installation-plan" class="hidden-until-ready">
+            <h2>Installation plan</h2>
+            <blockquote></blockquote>
+            <table>
+              <thead>
+                <tr>
+                  <th>Workpackage</th>
+                  <th>Step #</th>
+                  <th>Title</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>WP1</td>
+                  <td></td>
+                  <td>Intrastucture</td>
+                  <td>
+                    Provisioning and configuration of environment
+                    infrastructure.
+                  </td>
+                </tr>
+                <tr>
+                  <td>WP1</td>
+                  <td>1</td>
+                  <td>AWS account creation</td>
+                  <td>
+                    Creation of the AWS account prerequisites for a new
+                    dedicated cloud.
+                  </td>
+                </tr>
+                <tr>
+                  <td>WP1</td>
+                  <td>2</td>
+                  <td>Primary EKS cluster provisioning</td>
+                  <td>
+                    Creation of the primary cluster via our infrastructure
+                    provisioning repository.
+                  </td>
+                </tr>
+                <tr>
+                  <td>WP1</td>
+                  <td>3</td>
+                  <td>Secondary EKS cluster provisioning</td>
+                  <td>
+                    Creation of the secondary cluster via our infrastructure
+                    provisioning repository.
+                  </td>
+                </tr>
+                <tr>
+                  <td>WP1</td>
+                  <td>4</td>
+                  <td>Network peering to customer networks</td>
+                  <td>
+                    Setup of networking rules to connect the cluster to the
+                    customer network.
+                  </td>
+                </tr>
+                <tr>
+                  <td>WP1</td>
+                  <td>5</td>
+                  <td>Cluster DNS routing</td>
+                  <td>
+                    Setup to DNS routing to make the cluster accessible via DNS.
+                  </td>
+                </tr>
+                <tr>
+                  <td>WP2</td>
+                  <td></td>
+                  <td>Installation</td>
+                  <td>Installation of the Labforward Suite.</td>
+                </tr>
+                <tr>
+                  <td>WP2</td>
+                  <td>1</td>
+                  <td>Installation secondary environments</td>
+                  <td>
+                    Installation of the Labforward Suite to environments of the
+                    secondary cluster using Replicated.
+                  </td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td>WP2</td>
+                  <td>2</td>
+                  <td>Installation primary environment</td>
+                  <td>
+                    Installation of the Labforward Suite to the primary cluster
+                    using Replicated.
+                  </td>
+                </tr>
+                <tr>
+                  <td>WP3</td>
+                  <td></td>
+                  <td>Configuration</td>
+                  <td>Configuration of the Labforward Suite.</td>
+                </tr>
+                <tr>
+                  <td>WP3</td>
+                  <td>1</td>
+                  <td>Application configuration</td>
+                  <td>
+                    Configuration of the Labforward applications via the Admin
+                    Console.
+                  </td>
+                </tr>
+                <tr>
+                  <td>WP3</td>
+                  <td>2</td>
+                  <td>Custom domain and certificate</td>
+                  <td>
+                    Configuration of the customer-provided domain and
+                    certificates.
+                  </td>
+                </tr>
+                <tr>
+                  <td>WP3</td>
+                  <td>3</td>
+                  <td>Custom interface: Email</td>
+                  <td>Configuration of the customer-provided SMTP server.</td>
+                </tr>
+                <tr>
+                  <td>WP3</td>
+                  <td>4</td>
+                  <td>Custom interface: Identity Provider</td>
+                  <td>
+                    Configuration of the customer-provided identity management.
+                  </td>
+                </tr>
+                <tr>
+                  <td>WP4</td>
+                  <td></td>
+                  <td>Migration</td>
+                  <td>
+                    Migration of application data from previous installations.
+                  </td>
+                </tr>
+                <tr>
+                  <td>WP4</td>
+                  <td>1</td>
+                  <td>Migration of Laboperator data</td>
+                  <td>
+                    Migration of application data from previous Laboperator,
+                    Mender, and Workflow Editor installations.
+                  </td>
+                </tr>
+                <tr>
+                  <td>WP4</td>
+                  <td>2</td>
+                  <td>Migration of Labfolder/Labregister data</td>
+                  <td>
+                    Migration of application data from previous installations.
+                  </td>
+                </tr>
+                <tr>
+                  <td>WP5</td>
+                  <td></td>
+                  <td>Validation</td>
+                  <td>Formal environment validation.</td>
+                </tr>
+                <tr>
+                  <td>WP5</td>
+                  <td>1</td>
+                  <td>Completion of validation documentation</td>
+                  <td>Formal environment validation.</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+          <input type="submit" value="Send" id="send">
+        </form>
+      </div>
+    </main>
+  </body>
+</html>
