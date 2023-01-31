@@ -204,10 +204,12 @@
           for (var i = 0; i < envFields.length; ++i) {
             envFields[i].addEventListener("change", laq.validate);
           }
-          document.getElementById("send").addEventListener("click", function(event){
-            event.preventDefault();
-            laq.gDocSubmit();
-          });
+          document
+            .getElementById("send")
+            .addEventListener("click", function (event) {
+              event.preventDefault();
+              laq.gDocSubmit();
+            });
           laq.validate();
         },
         validate: function () {
@@ -222,6 +224,7 @@
           } else {
             view.state.customer_smtp = false;
           }
+
           if (view.isChecked("env.installation.cloud-based")) {
             view.state.cloud_based = true;
           } else if (view.isChecked("env.installation.on-premise")) {
@@ -257,17 +260,18 @@
           laq.render();
         },
         render: function () {
-          if (view.state.cloud_based) {
+          if (view.isChecked("env.installation.cloud-based")){
             view.show("env.installation-plan");
             view.show("env.cloud.aws");
-          } else {
-            view.hide("env.installation-plan");
-            if (null == view.state.cloud_based) {
-              view.hide("env.cloud.aws");
-            } else {
-              view.hide("env.cloud.aws");
-            }
+            view.hide("env.on-premise");
           }
+
+          if (view.isChecked("env.installation.on-premise")){
+            view.show("env.on-premise");
+            view.hide("env.installation-plan");
+            view.hide("env.cloud.aws");
+          }
+
 
           view.showHideMigrations();
 
@@ -334,7 +338,7 @@
               payload += google_field.entry + "=" + field.value + "&";
             }
           }
-          return payload ; //+ "dlut=1675193745227&fvv=1&partialResponse=%5Bnull%2Cnull%2C%22-1448081039679947237%22%5D&pageHistory=0&fbzx=-1448081039679947237";
+          return payload; //+ "dlut=1675193745227&fvv=1&partialResponse=%5Bnull%2Cnull%2C%22-1448081039679947237%22%5D&pageHistory=0&fbzx=-1448081039679947237";
         },
         receive: function (response) {
           console.log("Response:");
@@ -342,7 +346,7 @@
         },
         gDocSubmit: function () {
           const testURL =
-          "https://docs.google.com/forms/u/0/d/e/1FAIpQLSfgs68axF-RitfY5jgbl9YwhcqTaZiJo91leVeY5MeALe0ZWw/formResponse";
+            "https://docs.google.com/forms/u/0/d/e/1FAIpQLSfgs68axF-RitfY5jgbl9YwhcqTaZiJo91leVeY5MeALe0ZWw/formResponse";
 
           var payload = laq.prepareSubmit();
 
@@ -350,12 +354,12 @@
             method: "POST",
             mode: "no-cors",
             headers: {
-              'Content-Type': 'application/x-www-form-urlencoded',
-              'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8'
+              "Content-Type": "application/x-www-form-urlencoded",
+              Accept:
+                "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
             },
-            body: payload
+            body: payload,
           };
-
 
           const myRequest = new Request(testURL, myInit);
 
@@ -778,7 +782,40 @@
           </section>
 
           <h3>Configuration</h3>
+
+          
           <section id="configuration" class="hidden-until-ready">
+            <section id="env.on-premise">
+              <h3>On-premise Infrastruture</h3>
+              <label for=""></label>
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col">Resource</th>
+                    <th scope="col">Quantity/Unit</th>
+                    <th scope="col">Details</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row">Memory</th>
+                    <td>16 GB</td>
+                    <td>Available memory before installation</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">CPUs</th>
+                    <td>6 CPU</td>
+                    <td>With 2600 Mhz each</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Disk Space</th>
+                    <td>300 GB</td>
+                    <td>Available disk space in /var directory before installation</td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
+              
             <section id="env.cloud.aws">
               <h3>Cloud Infrastructure</h3>
               <label for="env.cloud.aws"
@@ -1133,7 +1170,7 @@
               </tbody>
             </table>
           </section>
-          <input type="submit" value="Send" id="send">
+          <input type="submit" value="Send" id="send" />
         </form>
       </div>
     </main>
