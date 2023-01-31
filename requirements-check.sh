@@ -29,11 +29,10 @@ else
 	echo "basic commands found. OK"
 fi
 
-# 500GB = 524288000 kilobytes
-TEST_AVAILABLE_SPACE=$(df --output=avail,source -k  | sort -u | awk 'BEGIN{a=0}{ if ($1>a) a=$1+0; source=$2;} END {if (a < 524288000) printf "Not enough disk space. There`s only %d (kilobytes) available. FAIL.", a; else printf "There is at least one partition with enough disk space for installation: %s", source}')
+# 500GB = 524288000 kilobytes, 300GB = 314572800 kilobytes
+TEST_AVAILABLE_SPACE=$(df -Pk /var /var/lib /var/lib/kubelet | tail -1 | awk -F ' ' 'BEGIN{kilobytes=0}{ if ($4+0>kilobytes) kilobytes=$4+0; source=$6;} END {if (kilobytes < 314572800) printf "Not enough disk space. There`s only %d (kilobytes) available. FAIL.", kilobytes; else printf "%s has enought disk space.", source}')
 
 echo $TEST_AVAILABLE_SPACE
-
 if [[ "$TEST_AVAILABLE_SPACE" == *"FAIL." ]]; then
 	FAIL=1
 fi
