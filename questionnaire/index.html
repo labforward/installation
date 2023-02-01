@@ -27,28 +27,28 @@
           labfolder_labregister: false,
           laboperator: false,
         },
-        showAll: function(nodes){
-          for (var i=0; i< nodes.length; i++){
+        showAll: function (nodes) {
+          for (var i = 0; i < nodes.length; i++) {
             view.show(nodes[i]);
           }
         },
         show: function (id) {
           var obj = typeof id == "string" ? document.getElementById(id) : id;
-          if (obj.constructor.name == "NodeList"){
+          if (obj.constructor.name == "NodeList") {
             return view.showAll(obj);
           }
           if (obj) {
             obj.classList.remove("laq-hidden");
           }
         },
-        hideAll: function(nodes){
-          for (var i=0; i< nodes.length;i++){
+        hideAll: function (nodes) {
+          for (var i = 0; i < nodes.length; i++) {
             view.hide(nodes[i]);
           }
         },
         hide: function (id) {
           var obj = typeof id == "string" ? document.getElementById(id) : id;
-          if (obj.constructor.name == "NodeList"){
+          if (obj.constructor.name == "NodeList") {
             return view.hideAll(obj);
           }
           if (obj) {
@@ -69,7 +69,9 @@
         },
         isChecked: function (fieldId) {
           const field =
-            typeof fieldId == "object" ? fieldId : document.getElementById(fieldId);
+            typeof fieldId == "object"
+              ? fieldId
+              : document.getElementById(fieldId);
           return field && field.checked == true;
         },
         showHideMigrations: function () {
@@ -223,7 +225,6 @@
           document
             .getElementById("send")
             .addEventListener("click", function (event) {
-              event.preventDefault();
               laq.gDocSubmit();
             });
           laq.validate();
@@ -276,28 +277,33 @@
           laq.render();
         },
         render: function () {
-          if (view.isChecked("env.installation.cloud-based")){
+          view.show("send");
+
+          if (view.isChecked("env.installation.cloud-based")) {
             view.show("env.installation-plan");
             view.show("env.cloud.aws");
             view.hide("env.on-premise");
           }
 
-          if (view.isChecked("env.installation.on-premise")){
+          if (view.isChecked("env.installation.on-premise")) {
             view.show("env.on-premise");
             view.hide("env.installation-plan");
             view.hide("env.cloud.aws");
           }
 
-          if (view.isChecked("env.products-to-install.laboperator")){
+          if (view.isChecked("env.products-to-install.laboperator")) {
             view.enable("env.products-to-install.laboperator-workflow-editor");
             view.enable("env.products-to-install.connector-manager");
           } else {
             view.disable("env.products-to-install.laboperator-workflow-editor");
             view.disable("env.products-to-install.connector-manager");
-            document.getElementById("env.products-to-install.laboperator-workflow-editor").checked = false;
-            document.getElementById("env.products-to-install.connector-manager").checked = false;
+            document.getElementById(
+              "env.products-to-install.laboperator-workflow-editor"
+            ).checked = false;
+            document.getElementById(
+              "env.products-to-install.connector-manager"
+            ).checked = false;
           }
-    
 
           view.showHideMigrations();
 
@@ -332,26 +338,26 @@
           }
 
           var products = "";
-          if (view.state.labfolder_labregister){
-            products +="LF+LR";
-          } 
+          if (view.state.labfolder_labregister) {
+            products += "LF+LR";
+          }
           if (view.state.laboperator) {
-            products +="+LO";
+            products += "+LO";
           }
 
-          if ("+LO" == products){
+          if ("+LO" == products) {
             view.show(document.querySelectorAll("[data-products='LO']"));
             view.hide(document.querySelectorAll("[data-products='LF+LR']"));
             view.hide(document.querySelectorAll("[data-products='LF+LR+LO']"));
-          } 
+          }
 
-          if ("LF+LR" == products){
+          if ("LF+LR" == products) {
             view.hide(document.querySelectorAll("[data-products='LO']"));
             view.show(document.querySelectorAll("[data-products='LF+LR']"));
             view.hide(document.querySelectorAll("[data-products='LF+LR+LO']"));
           }
 
-          if ("LF+LR+LO" == products){
+          if ("LF+LR+LO" == products) {
             view.hide(document.querySelectorAll("[data-products='LO']"));
             view.hide(document.querySelectorAll("[data-products='LF+LR']"));
             view.show(document.querySelectorAll("[data-products='LF+LR+LO']"));
@@ -379,14 +385,14 @@
 
           laq.prepareSubmit();
         },
-        useField: function(field){
-          if (typeof field != "object"){
+        useField: function (field) {
+          if (typeof field != "object") {
             return false;
           }
-          var notHidden = !field.classList.contains('laq-hidden');
+          var notHidden = !field.classList.contains("laq-hidden");
           var isChecked = view.isChecked(field);
-          var isText = field.value != "yes"
-          return  notHidden && ( isText || isChecked );
+          var isText = field.value != "yes";
+          return notHidden && (isText || isChecked);
         },
         prepareSubmit: function () {
           var payload = "";
@@ -394,15 +400,10 @@
             var google_field = google_form.map_fields[i];
             var field = document.getElementById("env." + google_field.name);
             if (laq.useField(field)) {
-              console.log(field.value);
               payload += google_field.entry + "=" + field.value + "&";
             }
           }
-          return payload; //+ "dlut=1675193745227&fvv=1&partialResponse=%5Bnull%2Cnull%2C%22-1448081039679947237%22%5D&pageHistory=0&fbzx=-1448081039679947237";
-        },
-        receive: function (response) {
-          console.log("Response:");
-          console.log(response);
+          return payload;
         },
         gDocSubmit: function () {
           const gDocURL =
@@ -426,19 +427,14 @@
           view.disable("send");
           fetch(myRequest)
             .then(function (response) {
-              console.log("AAAAAA");
-              console.log(response);
               view.hide("send");
               view.show("success");
               return response;
             })
             .then(function (response) {
-              console.log("BBBBBBB");
-              console.log(response);
               view.enable("send");
             })
             .catch(function (e) {
-              console.log(e);
               view.enable("send");
             });
         },
@@ -488,7 +484,7 @@
             <section id="env.customer">
               customer name:
               <label for="env.customer.name"
-                ><input type="text" id="env.customer.name"
+                ><input type="text" id="env.customer.name" required
               /></label>
             </section>
 
@@ -715,6 +711,7 @@
                   type="text"
                   placeholder="https://labfolder.{prod.}company.com"
                   id="env.domain.labfolder-labregister.primary.fqdn"
+                  required
                 />
               </label>
               <label
@@ -728,6 +725,7 @@
                   type="text"
                   placeholder="https://laboperator.{prod.}company.com"
                   id="env.domain.laboperator.primary.fqdn"
+                  required
                 />
               </label>
 
@@ -743,6 +741,7 @@
                     type="text"
                     placeholder="https://labfolder.{test.}company.com"
                     id="env.domain.labfolder-labregister.secondary.fqdn"
+                    required
                   />
                 </label>
 
@@ -757,6 +756,7 @@
                     type="text"
                     placeholder="https://laboperator.{test.}company.com"
                     id="env.domain.laboperator.secondary.fqdn"
+                    required
                   />
                 </label>
               </div>
@@ -841,10 +841,11 @@
                 The customer has to provide email server configuration.
                 <blockquote>
                   SMTP server configuration usually consists of host,
-                  credentials, TLS settings, and email addresses used for sending
-                  emails. As part of the installation plan, a joined session for
-                  this configuration will be scheduled. Attendance of customer
-                  IT with the required knowledge and privileges will be needed.
+                  credentials, TLS settings, and email addresses used for
+                  sending emails. As part of the installation plan, a joined
+                  session for this configuration will be scheduled. Attendance
+                  of customer IT with the required knowledge and privileges will
+                  be needed.
                 </blockquote>
               </label>
             </section>
@@ -852,7 +853,6 @@
 
           <h3>Configuration</h3>
 
-          
           <section id="configuration" class="hidden-until-ready">
             <section id="env.on-premise">
               <h3>On-premise Infrastruture</h3>
@@ -879,7 +879,9 @@
                   <tr>
                     <th scope="row">Disk Space</th>
                     <td>150 GB</td>
-                    <td>Available disk space in /var directory before installation</td>
+                    <td>
+                      Available disk space in /var directory before installation
+                    </td>
                   </tr>
                 </tbody>
                 <tbody data-products="LF+LR">
@@ -896,7 +898,9 @@
                   <tr>
                     <th scope="row">Disk Space</th>
                     <td>300 GB</td>
-                    <td>Available disk space in /var directory before installation</td>
+                    <td>
+                      Available disk space in /var directory before installation
+                    </td>
                   </tr>
                 </tbody>
                 <tbody data-products="LF+LR+LO">
@@ -913,12 +917,14 @@
                   <tr>
                     <th scope="row">Disk Space</th>
                     <td>450 GB</td>
-                    <td>Available disk space in /var directory before installation</td>
+                    <td>
+                      Available disk space in /var directory before installation
+                    </td>
                   </tr>
                 </tbody>
               </table>
             </section>
-              
+
             <section id="env.cloud.aws">
               <h3>Cloud Infrastructure</h3>
               <label for="env.cloud.aws"
@@ -926,7 +932,8 @@
                 cloud?</label
               >
               <label for="env.cloud.aws.region"
-                ><select id="env.cloud.aws.region">
+                ><select id="env.cloud.aws.region" required>
+                  <option value="">-select-</option>
                   <option value="af-south-1">af-south-1</option>
                   <option value="ap-east-1">ap-east-1</option>
                   <option value="ap-northeast-1">ap-northeast-1</option>
@@ -1273,8 +1280,10 @@
               </tbody>
             </table>
           </section>
-          <mark id="success" class="laq-hidden">Information sent successfully!</mark>
-          <input type="submit" value="Send" id="send" />
+          <mark id="success" class="laq-hidden"
+            >Information sent successfully!</mark
+          >
+          <button id="send">Send</button>
         </form>
       </div>
     </main>
