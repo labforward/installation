@@ -27,14 +27,30 @@
           labfolder_labregister: false,
           laboperator: false,
         },
+        showAll: function(nodes){
+          for (var i=0; i< nodes.length; i++){
+            view.show(nodes[i]);
+          }
+        },
         show: function (id) {
-          var obj = typeof id == "object" ? id : document.getElementById(id);
+          var obj = typeof id == "string" ? document.getElementById(id) : id;
+          if (obj.constructor.name == "NodeList"){
+            return view.showAll(obj);
+          }
           if (obj) {
             obj.classList.remove("laq-hidden");
           }
         },
+        hideAll: function(nodes){
+          for (var i=0; i< nodes.length;i++){
+            view.hide(nodes[i]);
+          }
+        },
         hide: function (id) {
-          var obj = typeof id == "object" ? id : document.getElementById(id);
+          var obj = typeof id == "string" ? document.getElementById(id) : id;
+          if (obj.constructor.name == "NodeList"){
+            return view.hideAll(obj);
+          }
           if (obj) {
             obj.classList.add("laq-hidden");
           }
@@ -53,7 +69,7 @@
         },
         isChecked: function (fieldId) {
           const field =
-            typeof id == "object" ? fieldId : document.getElementById(fieldId);
+            typeof fieldId == "object" ? fieldId : document.getElementById(fieldId);
           return field && field.checked == true;
         },
         showHideMigrations: function () {
@@ -272,6 +288,16 @@
             view.hide("env.cloud.aws");
           }
 
+          if (view.isChecked("env.products-to-install.laboperator")){
+            view.enable("env.products-to-install.laboperator-workflow-editor");
+            view.enable("env.products-to-install.connector-manager");
+          } else {
+            view.disable("env.products-to-install.laboperator-workflow-editor");
+            view.disable("env.products-to-install.connector-manager");
+            document.getElementById("env.products-to-install.laboperator-workflow-editor").checked = false;
+            document.getElementById("env.products-to-install.connector-manager").checked = false;
+          }
+    
 
           view.showHideMigrations();
 
@@ -305,6 +331,32 @@
             view.hide("env.domain.fqdn");
           }
 
+          var products = "";
+          if (view.state.labfolder_labregister){
+            products +="LF+LR";
+          } 
+          if (view.state.laboperator) {
+            products +="+LO";
+          }
+
+          if ("+LO" == products){
+            view.show(document.querySelectorAll("[data-products='LO']"));
+            view.hide(document.querySelectorAll("[data-products='LF+LR']"));
+            view.hide(document.querySelectorAll("[data-products='LF+LR+LO']"));
+          } 
+
+          if ("LF+LR" == products){
+            view.hide(document.querySelectorAll("[data-products='LO']"));
+            view.show(document.querySelectorAll("[data-products='LF+LR']"));
+            view.hide(document.querySelectorAll("[data-products='LF+LR+LO']"));
+          }
+
+          if ("LF+LR+LO" == products){
+            view.hide(document.querySelectorAll("[data-products='LO']"));
+            view.hide(document.querySelectorAll("[data-products='LF+LR']"));
+            view.show(document.querySelectorAll("[data-products='LF+LR+LO']"));
+          }
+
           if (view.state.customer_smtp) {
             view.show("env.email.customer.smtp");
           } else {
@@ -327,13 +379,21 @@
 
           laq.prepareSubmit();
         },
+        useField: function(field){
+          if (typeof field != "object"){
+            return false;
+          }
+          var notHidden = !field.classList.contains('laq-hidden');
+          var isChecked = view.isChecked(field);
+          var isText = field.value != "yes"
+          return  notHidden && ( isText || isChecked );
+        },
         prepareSubmit: function () {
           var payload = "";
           for (var i = 0; i < google_form.map_fields.length; i++) {
             var google_field = google_form.map_fields[i];
-            var fieldId = "env." + google_field.name;
-            var field = document.getElementById(fieldId);
-            if (field) {
+            var field = document.getElementById("env." + google_field.name);
+            if (laq.useField(field)) {
               console.log(field.value);
               payload += google_field.entry + "=" + field.value + "&";
             }
@@ -345,7 +405,7 @@
           console.log(response);
         },
         gDocSubmit: function () {
-          const testURL =
+          const gDocURL =
             "https://docs.google.com/forms/u/0/d/e/1FAIpQLSfgs68axF-RitfY5jgbl9YwhcqTaZiJo91leVeY5MeALe0ZWw/formResponse";
 
           var payload = laq.prepareSubmit();
@@ -361,18 +421,25 @@
             body: payload,
           };
 
-          const myRequest = new Request(testURL, myInit);
+          const myRequest = new Request(gDocURL, myInit);
 
+          view.disable("send");
           fetch(myRequest)
             .then(function (response) {
+              console.log("AAAAAA");
               console.log(response);
+              view.hide("send");
+              view.show("success");
               return response;
             })
             .then(function (response) {
+              console.log("BBBBBBB");
               console.log(response);
+              view.enable("send");
             })
             .catch(function (e) {
               console.log(e);
+              view.enable("send");
             });
         },
       };
@@ -616,17 +683,17 @@
               <label for="env.domain.domain-strategy"
                 >Do you want an installation under your own domain?</label
               >
-              <label for="env.domain.labfoward-domain"
+              <label for="env.domain.use-labfoward-domain"
                 ><input
                   type="checkbox"
-                  id="env.domain.labfoward-domain"
+                  id="env.domain.use-labfoward-domain"
                   value="yes"
                 />Labforward domain (e.g. *.company.labforward.com)</label
               >
-              <label for="env.domain.customer-domain"
+              <label for="env.domain.use-customer-domain"
                 ><input
                   type="checkbox"
-                  id="env.domain.customer-domain"
+                  id="env.domain.use-customer-domain"
                   value="yes"
                 />Customer domain (e.g. *.labforward.company.com)</label
               >
@@ -721,12 +788,14 @@
                 for="env.identity-provider.use-labforward-identity-provider"
                 ><input
                   type="checkbox"
+                  value="yes"
                   id="env.identity-provider.use-labforward-identity-provider"
                 />Use Labforward identity and access management</label
               >
               <label for="env.identity-provider.use-customer-identity-provider"
                 ><input
                   type="checkbox"
+                  value="yes"
                   id="env.identity-provider.use-customer-identity-provider"
                 />Use a custom identity provider</label
               >
@@ -772,7 +841,7 @@
                 The customer has to provide email server configuration.
                 <blockquote>
                   SMTP server configuration usually consists of host,
-                  credentials, TLS settings, and email adresses used for sending
+                  credentials, TLS settings, and email addresses used for sending
                   emails. As part of the installation plan, a joined session for
                   this configuration will be scheduled. Attendance of customer
                   IT with the required knowledge and privileges will be needed.
@@ -796,7 +865,24 @@
                     <th scope="col">Details</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody data-products="LO">
+                  <tr>
+                    <th scope="row">Memory</th>
+                    <td>16 GB</td>
+                    <td>Available memory before installation</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">CPUs</th>
+                    <td>6 CPU</td>
+                    <td>With 2600 Mhz each</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Disk Space</th>
+                    <td>150 GB</td>
+                    <td>Available disk space in /var directory before installation</td>
+                  </tr>
+                </tbody>
+                <tbody data-products="LF+LR">
                   <tr>
                     <th scope="row">Memory</th>
                     <td>16 GB</td>
@@ -810,6 +896,23 @@
                   <tr>
                     <th scope="row">Disk Space</th>
                     <td>300 GB</td>
+                    <td>Available disk space in /var directory before installation</td>
+                  </tr>
+                </tbody>
+                <tbody data-products="LF+LR+LO">
+                  <tr>
+                    <th scope="row">Memory</th>
+                    <td>24 GB</td>
+                    <td>Available memory before installation</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">CPUs</th>
+                    <td>8 CPU</td>
+                    <td>With 2600 Mhz each</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Disk Space</th>
+                    <td>450 GB</td>
                     <td>Available disk space in /var directory before installation</td>
                   </tr>
                 </tbody>
@@ -1170,6 +1273,7 @@
               </tbody>
             </table>
           </section>
+          <mark id="success" class="laq-hidden">Information sent successfully!</mark>
           <input type="submit" value="Send" id="send" />
         </form>
       </div>
