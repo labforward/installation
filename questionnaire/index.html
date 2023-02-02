@@ -190,8 +190,12 @@
             entry: "entry.1403459674",
           },
           {
-            name: "domain.labfolder-labregister.primary.fqdn",
+            name: "domain.labfolder.primary.fqdn",
             entry: "entry.1241608360",
+          },
+          {
+            name: "domain.labregister.primary.fqdn",
+            entry: "entry.9357705",
           },
           {
             name: "domain.laboperator.primary.fqdn",
@@ -206,8 +210,12 @@
             entry: "entry.717855287",
           },
           {
-            name: "domain.labfolder-labregister.secondary.fqdn",
+            name: "domain.labfolder.secondary.fqdn",
             entry: "entry.1308652127",
+          },
+          {
+            name: "domain.labregister.secondary.fqdn",
+            entry: "entry.142511199",
           },
           {
             name: "domain.laboperator.secondary.fqdn",
@@ -317,27 +325,42 @@
             ).checked = false;
           }
 
-          if(view.isChecked("env.products-to-install.laboperator-workflow-editor") || view.isChecked("env.products-to-migrate.laboperator-workflow-editor")){
-            view.show("env.domain.laboperator-workflow-editor.primary.fqdn.label");
-            if (view.isChecked("env.regulation.no-special-requirements")){
-              view.hide("env.domain.laboperator-workflow-editor.secondary.fqdn.label");
-            } 
-            if (view.isChecked("env.regulation.gxp-operation")){
-              view.show("env.domain.laboperator-workflow-editor.secondary.fqdn.label");
+          if (
+            view.isChecked(
+              "env.products-to-install.laboperator-workflow-editor"
+            ) ||
+            view.isChecked(
+              "env.products-to-migrate.laboperator-workflow-editor"
+            )
+          ) {
+            view.show(
+              "env.domain.laboperator-workflow-editor.primary.fqdn.label"
+            );
+            if (view.isChecked("env.regulation.no-special-requirements")) {
+              view.hide(
+                "env.domain.laboperator-workflow-editor.secondary.fqdn.label"
+              );
+            }
+            if (view.isChecked("env.regulation.gxp-operation")) {
+              view.show(
+                "env.domain.laboperator-workflow-editor.secondary.fqdn.label"
+              );
             }
           } else {
-            view.hide("env.domain.laboperator-workflow-editor.primary.fqdn.label");
-            view.hide("env.domain.laboperator-workflow-editor.secondary.fqdn.label");
+            view.hide(
+              "env.domain.laboperator-workflow-editor.primary.fqdn.label"
+            );
+            view.hide(
+              "env.domain.laboperator-workflow-editor.secondary.fqdn.label"
+            );
           }
 
-          if(view.isChecked("env.products-to-install.connector-manager") || view.isChecked("env.products-to-migrate.connector-manager")){
+          if (
+            view.isChecked("env.products-to-install.connector-manager") ||
+            view.isChecked("env.products-to-migrate.connector-manager")
+          ) {
             view.show("env.domain.connector-manager.primary.fqdn.label");
-            if (view.isChecked("env.regulation.no-special-requirements")){
-              view.hide("env.domain.connector-manager.secondary.fqdn.label");
-            } 
-            if (view.isChecked("env.regulation.gxp-operation")){ 
-              view.show("env.domain.connector-manager.secondary.fqdn.label");
-            }
+            view.show("env.domain.connector-manager.secondary.fqdn.label");
           } else {
             view.hide("env.domain.connector-manager.primary.fqdn.label");
             view.hide("env.domain.connector-manager.secondary.fqdn.label");
@@ -360,11 +383,15 @@
           }
 
           if (view.state.labfolder_labregister) {
-            view.show("env.domain.labfolder-labregister.primary.fqdn.label");
-            view.show("env.domain.labfolder-labregister.secondary.fqdn.label");
+            view.show("env.domain.labfolder.primary.fqdn.label");
+            view.show("env.domain.labregister.primary.fqdn.label");
+            view.show("env.domain.labfolder.secondary.fqdn.label");
+            view.show("env.domain.labregister.secondary.fqdn.label");
           } else {
-            view.hide("env.domain.labfolder-labregister.primary.fqdn.label");
-            view.hide("env.domain.labfolder-labregister.secondary.fqdn.label");
+            view.hide("env.domain.labfolder.primary.fqdn.label");
+            view.hide("env.domain.labregister.primary.fqdn.label");
+            view.hide("env.domain.labfolder.secondary.fqdn.label");
+            view.hide("env.domain.labregister.secondary.fqdn.label");
           }
 
           if (view.state.labfolder_labregister || view.state.laboperator) {
@@ -733,19 +760,35 @@
                 cloud?</label
               >
               <label
-                id="env.domain.labfolder-labregister.primary.fqdn.label"
-                for="env.domain.labfolder-labregister.primary.fqdn"
+                id="env.domain.labfolder.primary.fqdn.label"
+                for="env.domain.labfolder.primary.fqdn"
                 data-tooltip="You can omit the https:// part"
                 data-placement="left"
               >
-                FQDN for Labfolder-Labregister (primary-cluster):
+                FQDN for Labfolder (primary-cluster):
                 <input
                   type="text"
                   placeholder="https://labfolder.{prod.}company.com"
-                  id="env.domain.labfolder-labregister.primary.fqdn"
+                  id="env.domain.labfolder.primary.fqdn"
                   required
                 />
               </label>
+
+              <label
+                id="env.domain.labregister.primary.fqdn.label"
+                for="env.domain.labregister.primary.fqdn"
+                data-tooltip="You can omit the https:// part"
+                data-placement="left"
+              >
+                FQDN for Labregister (primary-cluster):
+                <input
+                  type="text"
+                  placeholder="https://labregister.{prod.}company.com"
+                  id="env.domain.labregister.primary.fqdn"
+                  required
+                />
+              </label>
+
               <label
                 id="env.domain.laboperator.primary.fqdn.label"
                 for="env.domain.laboperator.primary.fqdn"
@@ -793,19 +836,34 @@
 
               <div id="env.domain.secondary.fqdns">
                 <label
-                  id="env.domain.labfolder-labregister.secondary.fqdn.label"
-                  for="env.domain.labfolder-labregister.secondary.fqdn"
+                  id="env.domain.labfolder.secondary.fqdn.label"
+                  for="env.domain.labfolder.secondary.fqdn"
                   data-tooltip="You can omit the https:// part"
                   data-placement="left"
                 >
-                  FQDN for Labfolder-Labregister (secondary-cluster):
+                  FQDN for Labfolder (secondary-cluster):
                   <input
                     type="text"
                     placeholder="https://labfolder.{test.}company.com"
-                    id="env.domain.labfolder-labregister.secondary.fqdn"
+                    id="env.domain.labfolder.secondary.fqdn"
                     required
                   />
                 </label>
+
+                <label
+                id="env.domain.labregister.secondary.fqdn.label"
+                for="env.domain.labregister.secondary.fqdn"
+                data-tooltip="You can omit the https:// part"
+                data-placement="left"
+              >
+                FQDN for Labregister (secondary-cluster):
+                <input
+                  type="text"
+                  placeholder="https://labfolder.{test.}company.com"
+                  id="env.domain.labregister.secondary.fqdn"
+                  required
+                />
+              </label>
 
                 <label
                   id="env.domain.laboperator.secondary.fqdn.label"
