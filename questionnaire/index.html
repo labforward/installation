@@ -114,6 +114,22 @@
             entry: "entry.677748823",
           },
           {
+            name: "networking.public",
+            entry: "entry.1402728233",
+          },
+          {
+            name: "networking.private",
+            entry: "entry.1329908872",
+          },
+          {
+            name: "email.use-labforward-smtp",
+            entry: "entry.1277583182",
+          },
+          {
+            name: "email.use-customer-smtp",
+            entry: "entry.1635487152",
+          },
+          {
             name: "products-to-install.labfolder-labregister",
             entry: "entry.890529400",
           },
@@ -150,14 +166,6 @@
             entry: "entry.2112004302",
           },
           {
-            name: "networking.public",
-            entry: "entry.1402728233",
-          },
-          {
-            name: "networking.private",
-            entry: "entry.1329908872",
-          },
-          {
             name: "domain.use-customer-domain",
             entry: "entry.1846490650",
           },
@@ -172,18 +180,6 @@
           {
             name: "identity-provider.use-customer-identity-provider",
             entry: "entry.86164800",
-          },
-          {
-            name: "email.use-customer-smtp",
-            entry: "entry.1635487152",
-          },
-          {
-            name: "email.use-labforward-smtp",
-            entry: "entry.1277583182",
-          },
-          {
-            name: "regulation.gxp-operation",
-            entry: "entry.1026285104",
           },
           {
             name: "cloud.aws.region",
@@ -202,12 +198,28 @@
             entry: "entry.904791097",
           },
           {
+            name: "domain.laboperator-workflow-editor.primary.fqdn",
+            entry: "entry.130957067",
+          },
+          {
+            name: "domain.connector-manager.primary.fqdn",
+            entry: "entry.717855287",
+          },
+          {
             name: "domain.labfolder-labregister.secondary.fqdn",
             entry: "entry.1308652127",
           },
           {
             name: "domain.laboperator.secondary.fqdn",
             entry: "entry.1609277239",
+          },
+          {
+            name: "domain.laboperator-workflow-editor.secondary.fqdn",
+            entry: "entry.1491024097",
+          },
+          {
+            name: "domain.connector-manager.secondary.fqdn",
+            entry: "entry.1491866007",
           },
         ],
       };
@@ -303,6 +315,32 @@
             document.getElementById(
               "env.products-to-install.connector-manager"
             ).checked = false;
+          }
+
+          if(view.isChecked("env.products-to-install.laboperator-workflow-editor") || view.isChecked("env.products-to-migrate.laboperator-workflow-editor")){
+            view.show("env.domain.laboperator-workflow-editor.primary.fqdn.label");
+            if (view.isChecked("env.regulation.no-special-requirements")){
+              view.hide("env.domain.laboperator-workflow-editor.secondary.fqdn.label");
+            } 
+            if (view.isChecked("env.regulation.gxp-operation")){
+              view.show("env.domain.laboperator-workflow-editor.secondary.fqdn.label");
+            }
+          } else {
+            view.hide("env.domain.laboperator-workflow-editor.primary.fqdn.label");
+            view.hide("env.domain.laboperator-workflow-editor.secondary.fqdn.label");
+          }
+
+          if(view.isChecked("env.products-to-install.connector-manager") || view.isChecked("env.products-to-migrate.connector-manager")){
+            view.show("env.domain.connector-manager.primary.fqdn.label");
+            if (view.isChecked("env.regulation.no-special-requirements")){
+              view.hide("env.domain.connector-manager.secondary.fqdn.label");
+            } 
+            if (view.isChecked("env.regulation.gxp-operation")){ 
+              view.show("env.domain.connector-manager.secondary.fqdn.label");
+            }
+          } else {
+            view.hide("env.domain.connector-manager.primary.fqdn.label");
+            view.hide("env.domain.connector-manager.secondary.fqdn.label");
           }
 
           view.showHideMigrations();
@@ -723,6 +761,36 @@
                 />
               </label>
 
+              <label
+                id="env.domain.laboperator-workflow-editor.primary.fqdn.label"
+                for="env.domain.laboperator-workflow-editor.primary.fqdn"
+                data-tooltip="You can omit the https:// part"
+                data-placement="left"
+              >
+                FQDN for Laboperator Workflow Editor (primary-cluster):
+                <input
+                  type="text"
+                  placeholder="https://workflow-editor.{prod.}company.com"
+                  id="env.domain.laboperator-workflow-editor.primary.fqdn"
+                  required
+                />
+              </label>
+
+              <label
+                id="env.domain.connector-manager.primary.fqdn.label"
+                for="env.domain.connector-manager.primary.fqdn"
+                data-tooltip="You can omit the https:// part"
+                data-placement="left"
+              >
+                FQDN for Laboperator Connector Manager (primary-cluster):
+                <input
+                  type="text"
+                  placeholder="https://connector-manager.{prod.}company.com"
+                  id="env.domain.connector-manager.primary.fqdn"
+                  required
+                />
+              </label>
+
               <div id="env.domain.secondary.fqdns">
                 <label
                   id="env.domain.labfolder-labregister.secondary.fqdn.label"
@@ -750,6 +818,36 @@
                     type="text"
                     placeholder="https://laboperator.{test.}company.com"
                     id="env.domain.laboperator.secondary.fqdn"
+                    required
+                  />
+                </label>
+
+                <label
+                  id="env.domain.laboperator-workflow-editor.secondary.fqdn.label"
+                  for="env.domain.laboperator-workflow-editor.secondary.fqdn"
+                  data-tooltip="You can omit the https:// part"
+                  data-placement="left"
+                >
+                  FQDN for Laboperator Workflow Editor (secondary-cluster):
+                  <input
+                    type="text"
+                    placeholder="https://workflow-editor.{test.}company.com"
+                    id="env.domain.laboperator-workflow-editor.secondary.fqdn"
+                    required
+                  />
+                </label>
+
+                <label
+                  id="env.domain.connector-manager.secondary.fqdn.label"
+                  for="env.domain.connector-manager.secondary.fqdn"
+                  data-tooltip="You can omit the https:// part"
+                  data-placement="left"
+                >
+                  FQDN for Laboperator Connector Manager (secondary-cluster):
+                  <input
+                    type="text"
+                    placeholder="https://connector-manager.{test.}company.com"
+                    id="env.domain.connector-manager.secondary.fqdn"
                     required
                   />
                 </label>
@@ -1106,7 +1204,10 @@
           </section>
 
           <h2>Installation plan</h2>
-          <section id="env.installation-plan.on-cloud" class="hidden-until-ready">
+          <section
+            id="env.installation-plan.on-cloud"
+            class="hidden-until-ready"
+          >
             <blockquote></blockquote>
             <table>
               <thead>
