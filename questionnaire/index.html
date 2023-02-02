@@ -280,14 +280,14 @@
           view.show("send");
 
           if (view.isChecked("env.installation.cloud-based")) {
-            view.show("env.installation-plan");
+            view.show("env.installation-plan.on-cloud");
             view.show("env.cloud.aws");
             view.hide("env.on-premise");
           }
 
           if (view.isChecked("env.installation.on-premise")) {
             view.show("env.on-premise");
-            view.hide("env.installation-plan");
+            view.hide("env.installation-plan.on-cloud");
             view.hide("env.cloud.aws");
           }
 
@@ -457,9 +457,6 @@
       <aside class="no-print">
         <nav>
           <details>
-            <summary><a href="#overview">Overview</a></summary>
-          </details>
-          <details>
             <summary><a href="#questionnaire">Questionnaire</a></summary>
           </details>
           <details>
@@ -473,9 +470,6 @@
         </nav>
       </aside>
       <div role="document">
-        <section id="overview">
-          <h2>Overview</h2>
-        </section>
         <form>
           <section id="questionnaire" class="hidden-until-ready">
             <h2>Questionnaire</h2>
@@ -1111,8 +1105,8 @@
             </section>
           </section>
 
-          <section id="env.installation-plan" class="hidden-until-ready">
-            <h2>Installation plan</h2>
+          <h2>Installation plan</h2>
+          <section id="env.installation-plan.on-cloud" class="hidden-until-ready">
             <blockquote></blockquote>
             <table>
               <thead>
