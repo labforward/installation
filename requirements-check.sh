@@ -5,16 +5,6 @@
 FAIL=0
 export LANG=en
 
-# many distros dont have sudo installed by default 
-#echo "Checking for superuser permission"
-#TEST_SUDO=$(sudo -l || echo "User must have superuser privilege on target machine. FAIL.")
-#echo "$TEST_SUDO"
-#
-#if [[ "$TEST_SUDO" == *"FAIL." ]]; then
-#	FAIL=1
-#fi
-#builtin type -P docker > /dev/null || echo "We need docker installed and in the user PATH. FAIL."; \
-#builtin type -P kubectl > /dev/null || echo "We need kubectl installed and in the user PATH. FAIL."; \
 
 echo "Checking basic requirements"
 TESTS=$(builtin type -P awk > /dev/null || echo "We need awk command installed and in the user PATH. FAIL."; \
@@ -29,8 +19,8 @@ else
 	echo "basic commands found. OK"
 fi
 
-# 500GB = 524288000 kilobytes, 300GB = 314572800 kilobytes
-TEST_AVAILABLE_SPACE=$(df -Pk /var /var/lib /var/lib/kubelet 2> /dev/null | tail -1 | awk -F ' ' 'BEGIN{kilobytes=0}{ if ($4+0>kilobytes) kilobytes=$4+0; source=$6;} END {if (kilobytes 157286400 < 1) printf "Not enough disk space. There`s only %d (kilobytes) available. FAIL.", kilobytes; else printf "%s has enought disk space.", source}')
+# 150GB = 157286400 kilobytes
+TEST_AVAILABLE_SPACE=$(df -Pk /var /var/lib /var/lib/kubelet 2> /dev/null | tail -1 | awk -F ' ' 'BEGIN{kilobytes=0}{ if ($4+0>kilobytes) kilobytes=$4+0; source=$6;} END {if (kilobytes 157286400 < 1) printf "Not enough disk space. There`s only %d (kilobytes) available. The installation requires at least 150 GB of diskspace. FAIL.", kilobytes; else printf "%s has enought disk space.", source}')
 
 echo $TEST_AVAILABLE_SPACE
 if [[ "$TEST_AVAILABLE_SPACE" == *"FAIL." ]]; then
@@ -51,7 +41,6 @@ if [[ "$TEST_CPU_CLOCK" == *"FAIL." ]]; then
 	FAIL=1
 fi
 
-# pegar memoria disponivel
 TEST_MEM=$(free --giga | awk -F' ' '/^Mem:/ {total=$2} END { if (total < 16) printf "Not enough total memory. 16GB is the minimun requirement. Memory found: %d FAIL.\n", total; else printf "Total memory: %s - OK. \n", total ; exit total < 16}')
 echo $TEST_MEM
 if [[ "$TEST_MEM" == *"FAIL." ]]; then
