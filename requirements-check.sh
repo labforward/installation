@@ -30,7 +30,7 @@ else
 fi
 
 # 500GB = 524288000 kilobytes, 300GB = 314572800 kilobytes
-TEST_AVAILABLE_SPACE=$(df -Pk /var /var/lib /var/lib/kubelet | tail -1 | awk -F ' ' 'BEGIN{kilobytes=0}{ if ($4+0>kilobytes) kilobytes=$4+0; source=$6;} END {if (kilobytes < 314572800) printf "Not enough disk space. There`s only %d (kilobytes) available. FAIL.", kilobytes; else printf "%s has enought disk space.", source}')
+TEST_AVAILABLE_SPACE=$(df -Pk /var /var/lib /var/lib/kubelet 2> /dev/null | tail -1 | awk -F ' ' 'BEGIN{kilobytes=0}{ if ($4+0>kilobytes) kilobytes=$4+0; source=$6;} END {if (kilobytes 157286400 < 1) printf "Not enough disk space. There`s only %d (kilobytes) available. FAIL.", kilobytes; else printf "%s has enought disk space.", source}')
 
 echo $TEST_AVAILABLE_SPACE
 if [[ "$TEST_AVAILABLE_SPACE" == *"FAIL." ]]; then
@@ -58,48 +58,24 @@ if [[ "$TEST_MEM" == *"FAIL." ]]; then
 	FAIL=1
 fi
 
+function curl_request() {
+	URL=$1
+	
+	response=$(curl -s -v -o /dev/null $URL 2>&1 | awk "/HTTP\/.+ (2[0-9][0-9]|3[0-9][0-9]).*/ {success=1} END { if (1 == success) { printf \"$URL safely reachable - OK. \n\"; } else printf \"$URL safely unreachable - FAIL.\n\"; }")
+	echo "$response"
+	if [[ "$response" == *"FAIL." ]]; then
+		FAIL=1
+	fi
+}
+
 echo "Network access"
-TEST_EC2=$(curl -s -v -o /dev/null https://ec2.amazonaws.com 2>&1 | awk -F' ' '/\* TLSv.*TLS handshake.*Certificate.*/ {certificate=1} /\* TLSv.*TLS handshake.*Server key exchange.*/ {verify=1} /\* TLSv.*TLS handshake.*Finished.*/ {finished=1} END { if (3 == certificate + verify + finished ) { printf "https://ec2.amazonaws.com safely reachable - OK. \n"; } else printf "https://ec2.amazonaws.com safely unreachable - FAIL.\n"; }')
-echo $TEST_EC2
-if [[ "$TEST_EC2" == *"FAIL." ]]; then
-	FAIL=1
-fi
 
-TEST_KURL=$(curl -s -v -o /dev/null https://k8s.kurl.sh 2>&1 | awk -F' ' '/\* TLSv.*TLS handshake.*Certificate.*/ {certificate=1} /\* TLSv.*TLS handshake.*Server key exchange.*/ {verify=1} /\* TLSv.*TLS handshake.*Finished.*/ {finished=1} END { if (3 == certificate + verify + finished ) { printf "https://k8s.kurl.sh safely reachable - OK. \n"; } else printf "https://k8s.kurl.sh safely unreachable - FAIL.\n"; }')
-echo $TEST_KURL
-if [[ "$TEST_KURL" == *"FAIL." ]]; then
-	FAIL=1
-fi
-
-TEST_REPLICATED_PROXY=$(curl -s -v -o /dev/null https://proxy.replicated.com 2>&1 | awk -F' ' '/\* TLSv.*TLS handshake.*Certificate.*/ {certificate=1} /\* TLSv.*TLS handshake.*CERT verify.*/ {verify=1} /\* TLSv.*TLS handshake.*Finished.*/ {finished=1} /\* TLSv.*TLS handshake.*Newsession.*/ {session=1} END { if (4 == certificate + verify + finished + session) { printf "https://proxy.replicated.com safely reachable - OK. \n"; } else printf "https://proxy.replicated.com safely unreachable - FAIL.\n"; }')
-echo $TEST_REPLICATED_PROXY
-if [[ "$TEST_REPLICATED_PROXY" == *"FAIL." ]]; then
-	FAIL=1
-fi
-
-TEST_REPLICATED=$(curl -s -v -o /dev/null https://replicated.app 2>&1 | awk -F' ' '/\* TLSv.*TLS handshake.*Certificate.*/ {certificate=1} /\* TLSv.*TLS handshake.*CERT verify.*/ {verify=1} /\* TLSv.*TLS handshake.*Finished.*/ {finished=1} /\* TLSv.*TLS handshake.*Newsession.*/ {session=1} END { if (4 == certificate + verify + finished + session) { printf "https://replicated.app safely reachable - OK. \n"; } else printf "https://replicated.app safely unreachable - FAIL.\n"; }')
-echo $TEST_REPLICATED
-if [[ "$TEST_REPLICATED" == *"FAIL." ]]; then
-	FAIL=1
-fi
-
-TEST_KOTS=$(curl -s -v -o /dev/null https://kots.io 2>&1 | awk -F' ' '/\* TLSv.*TLS handshake.*Certificate.*/ {certificate=1} /\* TLSv.*TLS handshake.*CERT verify.*/ {verify=1} /\* TLSv.*TLS handshake.*Finished.*/ {finished=1} /\* TLSv.*TLS handshake.*Newsession.*/ {session=1} END { if (4 == certificate + verify + finished + session) { printf "https://kots.io safely reachable - OK. \n"; } else printf "https://kots.io safely unreachable - FAIL.\n"; }')
-echo $TEST_KOTS
-if [[ "$TEST_KOTS" == *"FAIL." ]]; then
-	FAIL=1
-fi
-
-TEST_GITHUB=$(curl -s -v -o /dev/null https://github.com 2>&1 | awk -F' ' '/\* TLSv.*TLS handshake.*Certificate.*/ {certificate=1} /\* TLSv.*TLS handshake.*CERT verify.*/ {verify=1} /\* TLSv.*TLS handshake.*Finished.*/ {finished=1} /\* TLSv.*TLS handshake.*Newsession.*/ {session=1} END { if (4 == certificate + verify + finished + session) { printf "https://github.com safely reachable - OK. \n"; } else printf "https://github.com safely unreachable - FAIL.\n"; }')
-echo $TEST_GITHUB
-if [[ "$TEST_GITHUB" == *"FAIL." ]]; then
-	FAIL=1
-fi
-
-TEST_K8S_GCR=$(curl -s -v -o /dev/null https://k8s.gcr.io 2>&1 | awk -F' ' '/\* TLSv.*TLS handshake.*Certificate.*/ {certificate=1} /\* TLSv.*TLS handshake.*CERT verify.*/ {verify=1} /\* TLSv.*TLS handshake.*Finished.*/ {finished=1} /\* TLSv.*TLS handshake.*Newsession.*/ {session=1} END { if (4 == certificate + verify + finished + session) { printf "https://k8s.gcr.io safely reachable - OK. \n"; } else printf "https://k8s.gcr.io safely unreachable - FAIL.\n"; }')
-echo $TEST_K8S_GCR
-if [[ "TEST_K8S_GCR" == *"FAIL." ]]; then
-	FAIL=1
-fi
+curl_request 'https://ec2.amazonaws.com'
+curl_request 'https://k8s.kurl.sh'
+curl_request 'https://replicated.app'
+curl_request 'https://kots.io'
+curl_request 'https://github.com'
+curl_request 'https://k8s.gcr.io'
 
 echo "DF"
 df -h
