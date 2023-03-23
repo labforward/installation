@@ -300,14 +300,12 @@
           view.show("send");
 
           if (view.isChecked("env.installation.cloud-based")) {
-            view.show("env.installation-plan.on-cloud");
             view.show("env.cloud.aws");
             view.hide("env.on-premise");
           }
 
           if (view.isChecked("env.installation.on-premise")) {
             view.show("env.on-premise");
-            view.hide("env.installation-plan.on-cloud");
             view.hide("env.cloud.aws");
           }
 
@@ -1266,11 +1264,10 @@
             id="env.installation-plan.on-cloud"
             class="hidden-until-ready"
           >
-            <blockquote></blockquote>
             <table>
               <thead>
                 <tr>
-                  <th>Workpackage</th>
+                  <th>Deliverable</th>
                   <th>Step #</th>
                   <th>Title</th>
                   <th>Description</th>
@@ -1278,44 +1275,25 @@
               </thead>
               <tbody>
                 <tr>
-                  <td>WP1</td>
-                  <td></td>
+                  <td>D-1</td>
+                  <td>1</td>
                   <td>Intrastucture</td>
                   <td>
-                    Provisioning and configuration of environment
-                    infrastructure.
+                    Provision cluster machine with the 
+                    required resources.
                   </td>
                 </tr>
                 <tr>
-                  <td>WP1</td>
-                  <td>1</td>
-                  <td>AWS account creation</td>
-                  <td>
-                    Creation of the AWS account prerequisites for a new
-                    dedicated cloud.
-                  </td>
-                </tr>
-                <tr>
-                  <td>WP1</td>
+                  <td>D-1</td>
                   <td>2</td>
-                  <td>Primary EKS cluster provisioning</td>
+                  <td>Cluster DNS</td>
                   <td>
-                    Creation of the primary cluster via our infrastructure
-                    provisioning repository.
+                    Setup to DNS routing to make the cluster accessible via DNS.
                   </td>
                 </tr>
                 <tr>
-                  <td>WP1</td>
+                  <td>D-1</td>
                   <td>3</td>
-                  <td>Secondary EKS cluster provisioning</td>
-                  <td>
-                    Creation of the secondary cluster via our infrastructure
-                    provisioning repository.
-                  </td>
-                </tr>
-                <tr>
-                  <td>WP1</td>
-                  <td>4</td>
                   <td>Network peering to customer networks</td>
                   <td>
                     Setup of networking rules to connect the cluster to the
@@ -1323,115 +1301,81 @@
                   </td>
                 </tr>
                 <tr>
-                  <td>WP1</td>
-                  <td>5</td>
-                  <td>Cluster DNS routing</td>
+                  <td>D-2</td>
+                  <td>4</td>
+                  <td>Platform Installation</td>
                   <td>
-                    Setup to DNS routing to make the cluster accessible via DNS.
-                  </td>
-                </tr>
-                <tr>
-                  <td>WP2</td>
-                  <td></td>
-                  <td>Installation</td>
-                  <td>Installation of the Labforward Suite.</td>
-                </tr>
-                <tr>
-                  <td>WP2</td>
-                  <td>1</td>
-                  <td>Installation secondary environments</td>
-                  <td>
-                    Installation of the Labforward Suite to environments of the
-                    secondary cluster using Replicated.
-                  </td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <td>WP2</td>
-                  <td>2</td>
-                  <td>Installation primary environment</td>
-                  <td>
-                    Installation of the Labforward Suite to the primary cluster
+                    Installation of the Labforward Platform 
                     using Replicated.
                   </td>
                 </tr>
                 <tr>
-                  <td>WP3</td>
-                  <td></td>
-                  <td>Configuration</td>
-                  <td>Configuration of the Labforward Suite.</td>
-                </tr>
-                <tr>
-                  <td>WP3</td>
-                  <td>1</td>
-                  <td>Application configuration</td>
-                  <td>
-                    Configuration of the Labforward applications via the Admin
-                    Console.
-                  </td>
-                </tr>
-                <tr>
-                  <td>WP3</td>
-                  <td>2</td>
-                  <td>Custom domain and certificate</td>
+                  <td>D-2</td>
+                  <td>5</td>
+                  <td>Domain & TLS Certificate</td>
                   <td>
                     Configuration of the customer-provided domain and
-                    certificates.
+                    certificates via Admin Console.
                   </td>
                 </tr>
                 <tr>
-                  <td>WP3</td>
-                  <td>3</td>
+                  <td>D-2</td>
+                  <td>6</td>
                   <td>Custom interface: Email</td>
                   <td>Configuration of the customer-provided SMTP server.</td>
                 </tr>
                 <tr>
-                  <td>WP3</td>
-                  <td>4</td>
+                  <td>D-2</td>
+                  <td>7</td>
+                  <td>Application Configuration</td>
+                  <td>
+                    Configuration of the Labforward Platform via 
+                    Admin Console.
+                  </td>
+                </tr>
+                <tr>
+                  <td>D-2</td>
+                  <td>8</td>
                   <td>Custom interface: Identity Provider</td>
                   <td>
                     Configuration of the customer-provided identity management.
                   </td>
                 </tr>
                 <tr>
-                  <td>WP4</td>
-                  <td></td>
-                  <td>Migration</td>
+                  <td>D-3</td>
+                  <td>9</td>
+                  <td>Database Dump</td>
                   <td>
-                    Migration of application data from previous installations.
+                    Dump Labforward data from the old databases.
                   </td>
                 </tr>
                 <tr>
-                  <td>WP4</td>
-                  <td>1</td>
-                  <td>Migration of Laboperator data</td>
+                  <td>D-3</td>
+                  <td>10</td>
+                  <td>Transfer Database Dump</td>
                   <td>
-                    Migration of application data from previous Laboperator,
-                    Mender, and Workflow Editor installations.
+                    Transfer the database dump to the new infrastructure 
+                    machine
                   </td>
                 </tr>
                 <tr>
-                  <td>WP4</td>
-                  <td>2</td>
-                  <td>Migration of Labfolder/Labregister data</td>
+                  <td>D-3</td>
+                  <td>11</td>
+                  <td>Restore Database Dump</td>
                   <td>
-                    Migration of application data from previous installations.
+                    Clean up the new database and restore the old Database
+                    dump into it.
                   </td>
                 </tr>
                 <tr>
-                  <td>WP5</td>
-                  <td></td>
-                  <td>Validation</td>
-                  <td>Formal environment validation.</td>
-                </tr>
-                <tr>
-                  <td>WP5</td>
-                  <td>1</td>
-                  <td>Completion of validation documentation</td>
-                  <td>Formal environment validation.</td>
+                  <td>D-3</td>
+                  <td>12</td>
+                  <td>Formal environment validation</td>
+                  <td>Completion of validation documentation.</td>
                 </tr>
               </tbody>
             </table>
+            <label>All the steps can repeat in case of extra validation environments</label>
           </section>
           <mark id="success" class="laq-hidden"
             >Information sent successfully!</mark
