@@ -144,6 +144,10 @@
             entry: "entry.1714575381",
           },
           {
+            name: "domain.company-name",
+            entry: "entry.189162875",
+          },
+          {
             name: "identity-provider.use-labforward-identity-provider",
             entry: "entry.667719526",
           },
@@ -235,11 +239,7 @@
             ).checked = false;
           }
 
-          if (view.state.labfolder_labregister || view.state.laboperator) {
-            view.show("env.domain.domain-strategy");
-          } else {
-            view.hide("env.domain.domain-strategy");
-          }
+          view.show("env.domain.domain-strategy");
 
           var products = "";
           if (view.state.labfolder_labregister) {
@@ -556,24 +556,14 @@
 
             <section id="env.domain.fqdn">
               <label for="env.domain.fqdn">
-                Under which domain would you like to host your dedicated
-                cloud?</label
+                Company domain. For example, https://*.{company-domain}
+                <input 
+                type="text"
+                id="env.domain"
+                placeholder="{company-domain}"
+                >
+                </label
               >
-              <label id="env.domain.customer-domain-certificates">
-                <blockquote>
-                  The customer has to provide valid certificates for the
-                  selected domains. Options to provide certificates are
-                  <ol>
-                    <li>
-                      <mark
-                        >by automated certificate provisioning via cert-manager
-                        and Let's Encrypt;</mark
-                      >
-                    </li>
-                    <li><mark>or by providing cert files manually.</mark></li>
-                  </ol>
-                </blockquote>
-              </label>
             </section>
 
             <h3>Identity Provider</h3>
@@ -596,7 +586,7 @@
                   type="checkbox"
                   value="yes"
                   id="env.identity-provider.use-customer-identity-provider"
-                />Use a custom identity provider</label
+                />Use a custom identity provider. E.g.: Shibboleth, LDAP, Google, Microsoft...</label
               >
 
               <label
