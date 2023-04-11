@@ -159,10 +159,6 @@
             name: "cloud.aws.region",
             entry: "entry.1591949914",
           },
-          {
-            name: "cloud.aws.account.name",
-            entry: "entry.1403459674",
-          },
         ],
       };
 
@@ -198,8 +194,6 @@
 
           if (view.isChecked("env.installation.cloud-based")) {
             view.state.cloud_based = true;
-          } else if (view.isChecked("env.installation.on-premise")) {
-            view.state.cloud_based = false;
           } else {
             view.state.cloud_based = null;
           }
@@ -214,14 +208,12 @@
           view.show("send");
 
           if (view.isChecked("env.installation.cloud-based")) {
-            view.show("env.installation-plan.on-cloud");
             view.show("env.cloud.aws");
             view.hide("env.on-premise");
           }
 
           if (view.isChecked("env.installation.on-premise")) {
             view.show("env.on-premise");
-            view.hide("env.installation-plan.on-cloud");
             view.hide("env.cloud.aws");
           }
 
@@ -290,7 +282,7 @@
           laq.prepareSubmit();
         },
         useField: function (field) {
-          if (typeof field != "object") {
+          if (typeof field != "object" || null == field) {
             return false;
           }
           var notHidden = !field.classList.contains("laq-hidden");
@@ -662,7 +654,7 @@
                   </tr>
                   <tr>
                     <th scope="row">CPUs</th>
-                    <td>6 CPU</td>
+                    <td>12 CPU</td>
                     <td>With 2600 Mhz each</td>
                   </tr>
                   <tr>
@@ -681,7 +673,7 @@
                   </tr>
                   <tr>
                     <th scope="row">CPUs</th>
-                    <td>6 CPU</td>
+                    <td>12 CPU</td>
                     <td>With 2600 Mhz each</td>
                   </tr>
                   <tr>
@@ -759,17 +751,6 @@
                 >.</small
               >
 
-              <label for="env.cloud.aws.account">
-                <section id="env.cloud.aws.account">
-                  <label for="env.cloud.aws.account.name"
-                    ><input
-                      type="text"
-                      id="env.cloud.aws.account.name"
-                      placeholder="aws-acct-customer"
-                  /></label>
-                </section>
-              </label>
-
               <label for="env.cloud.aws.primary-cluster">
                 <h3>Primary Cluster: Initial dedicated AWS resources</h3>
                 <section id="env.cloud.aws.primary-cluster">
@@ -812,8 +793,8 @@
                       </tr>
                       <tr>
                         <th scope="row">CPUs</th>
-                        <td>2 AMD64 per node</td>
-                        <td>6</td>
+                        <td>4 AMD64 per node</td>
+                        <td>12</td>
                         <td>CPU core</td>
                       </tr>
                       <tr>
@@ -877,8 +858,8 @@
                       </tr>
                       <tr>
                         <th scope="row">CPUs</th>
-                        <td>2 AMD64 per node</td>
-                        <td>6</td>
+                        <td>4 AMD64 per node</td>
+                        <td>12</td>
                         <td>CPU core</td>
                       </tr>
                       <tr>
