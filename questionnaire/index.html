@@ -72,22 +72,7 @@
             typeof fieldId == "object"
               ? fieldId
               : document.getElementById(fieldId);
-          return field && field.checked == true;
-        },
-        showHideMigrations: function () {
-          const labels = document.querySelectorAll(
-            'label[for^="env.products-to-migrate."]'
-          );
-          for (var i = 0; i < labels.length; ++i) {
-            var migration = labels[i].dataset.migration;
-            if (migration) {
-              if (view.state.migrate) {
-                view.show(labels[i]);
-              } else {
-                view.hide(labels[i]);
-              }
-            }
-          }
+          return field && (field.checked == true || field.selected);
         },
       };
 
@@ -146,24 +131,9 @@
             entry: "entry.569243513",
           },
           {
-            name: "products-to-migrate.none",
+            name: "products-to-migrate.none.yes",
             entry: "entry.1803285821",
-          },
-          {
-            name: "products-to-migrate.labfolder-labregister",
-            entry: "entry.907467583",
-          },
-          {
-            name: "products-to-migrate.laboperator",
-            entry: "entry.48913136",
-          },
-          {
-            name: "products-to-migrate.laboperator-workflow-editor",
-            entry: "entry.319096810",
-          },
-          {
-            name: "products-to-migrate.connector-manager",
-            entry: "entry.2112004302",
+            default: "no"
           },
           {
             name: "domain.use-customer-domain",
@@ -172,6 +142,10 @@
           {
             name: "domain.use-labfoward-domain",
             entry: "entry.1714575381",
+          },
+          {
+            name: "domain.company-name",
+            entry: "entry.189162875",
           },
           {
             name: "identity-provider.use-labforward-identity-provider",
@@ -184,50 +158,6 @@
           {
             name: "cloud.aws.region",
             entry: "entry.1591949914",
-          },
-          {
-            name: "cloud.aws.account.name",
-            entry: "entry.1403459674",
-          },
-          {
-            name: "domain.labfolder.primary.fqdn",
-            entry: "entry.1241608360",
-          },
-          {
-            name: "domain.labregister.primary.fqdn",
-            entry: "entry.9357705",
-          },
-          {
-            name: "domain.laboperator.primary.fqdn",
-            entry: "entry.904791097",
-          },
-          {
-            name: "domain.laboperator-workflow-editor.primary.fqdn",
-            entry: "entry.130957067",
-          },
-          {
-            name: "domain.connector-manager.primary.fqdn",
-            entry: "entry.717855287",
-          },
-          {
-            name: "domain.labfolder.secondary.fqdn",
-            entry: "entry.1308652127",
-          },
-          {
-            name: "domain.labregister.secondary.fqdn",
-            entry: "entry.142511199",
-          },
-          {
-            name: "domain.laboperator.secondary.fqdn",
-            entry: "entry.1609277239",
-          },
-          {
-            name: "domain.laboperator-workflow-editor.secondary.fqdn",
-            entry: "entry.1491024097",
-          },
-          {
-            name: "domain.connector-manager.secondary.fqdn",
-            entry: "entry.1491866007",
           },
         ],
       };
@@ -264,35 +194,13 @@
 
           if (view.isChecked("env.installation.cloud-based")) {
             view.state.cloud_based = true;
-          } else if (view.isChecked("env.installation.on-premise")) {
-            view.state.cloud_based = false;
           } else {
             view.state.cloud_based = null;
           }
 
-          if (view.isChecked("env.products-to-migrate.none")) {
-            view.state.migrate = false;
-          } else {
-            view.state.migrate = true;
-          }
+          view.state.labfolder_labregister = view.isChecked("env.products-to-install.labfolder-labregister")
 
-          if (view.isChecked("env.products-to-install.labfolder-labregister")) {
-            view.state.labfolder_labregister = true;
-          } else if (
-            view.isChecked("env.products-to-migrate.labfolder-labregister")
-          ) {
-            view.state.labfolder_labregister = true;
-          } else {
-            view.state.labfolder_labregister = false;
-          }
-
-          if (view.isChecked("env.products-to-install.laboperator")) {
-            view.state.laboperator = true;
-          } else if (view.isChecked("env.products-to-migrate.laboperator")) {
-            view.state.laboperator = true;
-          } else {
-            view.state.laboperator = false;
-          }
+          view.state.laboperator = view.isChecked("env.products-to-install.laboperator");
 
           laq.render();
         },
@@ -300,14 +208,12 @@
           view.show("send");
 
           if (view.isChecked("env.installation.cloud-based")) {
-            view.show("env.installation-plan.on-cloud");
             view.show("env.cloud.aws");
             view.hide("env.on-premise");
           }
 
           if (view.isChecked("env.installation.on-premise")) {
             view.show("env.on-premise");
-            view.hide("env.installation-plan.on-cloud");
             view.hide("env.cloud.aws");
           }
 
@@ -325,82 +231,7 @@
             ).checked = false;
           }
 
-          if (
-            view.isChecked(
-              "env.products-to-install.laboperator-workflow-editor"
-            ) ||
-            view.isChecked(
-              "env.products-to-migrate.laboperator-workflow-editor"
-            )
-          ) {
-            view.show(
-              "env.domain.laboperator-workflow-editor.primary.fqdn.label"
-            );
-            if (view.isChecked("env.regulation.no-special-requirements")) {
-              view.hide(
-                "env.domain.laboperator-workflow-editor.secondary.fqdn.label"
-              );
-            }
-            if (view.isChecked("env.regulation.gxp-operation")) {
-              view.show(
-                "env.domain.laboperator-workflow-editor.secondary.fqdn.label"
-              );
-            }
-          } else {
-            view.hide(
-              "env.domain.laboperator-workflow-editor.primary.fqdn.label"
-            );
-            view.hide(
-              "env.domain.laboperator-workflow-editor.secondary.fqdn.label"
-            );
-          }
-
-          if (
-            view.isChecked("env.products-to-install.connector-manager") ||
-            view.isChecked("env.products-to-migrate.connector-manager")
-          ) {
-            view.show("env.domain.connector-manager.primary.fqdn.label");
-            view.show("env.domain.connector-manager.secondary.fqdn.label");
-          } else {
-            view.hide("env.domain.connector-manager.primary.fqdn.label");
-            view.hide("env.domain.connector-manager.secondary.fqdn.label");
-          }
-
-          view.showHideMigrations();
-
-          if (view.state.regulation_requirements) {
-            view.show("env.domain.secondary.fqdns");
-          } else {
-            view.hide("env.domain.secondary.fqdns");
-          }
-
-          if (view.state.laboperator) {
-            view.show("env.domain.laboperator.primary.fqdn.label");
-            view.show("env.domain.laboperator.secondary.fqdn.label");
-          } else {
-            view.hide("env.domain.laboperator.primary.fqdn.label");
-            view.hide("env.domain.laboperator.secondary.fqdn.label");
-          }
-
-          if (view.state.labfolder_labregister) {
-            view.show("env.domain.labfolder.primary.fqdn.label");
-            view.show("env.domain.labregister.primary.fqdn.label");
-            view.show("env.domain.labfolder.secondary.fqdn.label");
-            view.show("env.domain.labregister.secondary.fqdn.label");
-          } else {
-            view.hide("env.domain.labfolder.primary.fqdn.label");
-            view.hide("env.domain.labregister.primary.fqdn.label");
-            view.hide("env.domain.labfolder.secondary.fqdn.label");
-            view.hide("env.domain.labregister.secondary.fqdn.label");
-          }
-
-          if (view.state.labfolder_labregister || view.state.laboperator) {
-            view.show("env.domain.domain-strategy");
-            view.show("env.domain.fqdn");
-          } else {
-            view.hide("env.domain.domain-strategy");
-            view.hide("env.domain.fqdn");
-          }
+          view.show("env.domain.domain-strategy");
 
           var products = "";
           if (view.state.labfolder_labregister) {
@@ -451,7 +282,7 @@
           laq.prepareSubmit();
         },
         useField: function (field) {
-          if (typeof field != "object") {
+          if (typeof field != "object" || null == field) {
             return false;
           }
           var notHidden = !field.classList.contains("laq-hidden");
@@ -465,7 +296,11 @@
             var google_field = google_form.map_fields[i];
             var field = document.getElementById("env." + google_field.name);
             if (laq.useField(field)) {
-              payload += google_field.entry + "=" + field.value + "&";
+              var value = field.value;
+              if (value == null){
+                value = google_field.default;
+              }
+              payload += google_field.entry + "=" + value + "&";
             }
           }
           return payload;
@@ -527,11 +362,6 @@
           <details>
             <summary><a href="#configuration">Configuration</a></summary>
           </details>
-          <details>
-            <summary>
-              <a href="#env.installation-plan">Installation plan</a>
-            </summary>
-          </details>
         </nav>
       </aside>
       <div role="document">
@@ -541,7 +371,7 @@
 
             <h3>Customer</h3>
             <section id="env.customer">
-              customer name:
+              Name:
               <label for="env.customer.name"
                 ><input type="text" id="env.customer.name" required
               /></label>
@@ -642,64 +472,26 @@
             <section id="env.products-to-migrate">
               <h3>Migration</h3>
               <label for="env.products-to-migrate"
-                >Is there an existing installation of Labforward products? If
-                so, which products will require a data migration to the new
-                environment?
+                >Do you want to migrate data from an existing Labforward's environment?
               </label>
-              <label for="env.products-to-migrate.none">
+              <label for="env.products-to-migrate.none.no">
                 <input
-                  type="checkbox"
-                  value="yes"
-                  id="env.products-to-migrate.none"
+                  type="radio"
+                  value="no"
+                  id="env.products-to-migrate.none.no"
+                  name="env.products-to-migrate.none"
                 />
-                No data migration needed
+                No. This is a new installation or I will connect to my current database.
               </label>
-              <label
-                data-migration="true"
-                for="env.products-to-migrate.labfolder-labregister"
-              >
+              <label for="env.products-to-migrate.none.yes">
                 <input
-                  type="checkbox"
+                  type="radio"
                   value="yes"
-                  id="env.products-to-migrate.labfolder-labregister"
+                  id="env.products-to-migrate.none.yes"
+                  name="env.products-to-migrate.none"
                 />
-                Labfolder/Labregister
+                Yes, I want to migrate my data.
               </label>
-              <label
-                data-migration="true"
-                for="env.products-to-migrate.laboperator"
-              >
-                <input
-                  type="checkbox"
-                  value="yes"
-                  id="env.products-to-migrate.laboperator"
-                />
-                Laboperator
-              </label>
-              <label
-                data-migration="true"
-                for="env.products-to-migrate.laboperator-workflow-editor"
-              >
-                <input
-                  type="checkbox"
-                  value="yes"
-                  class="sub-checkbox"
-                  id="env.products-to-migrate.laboperator-workflow-editor"
-                />
-                Laboperator Workflow Editor
-              </label>
-              <label
-                data-migration="true"
-                for="env.products-to-migrate.connector-manager"
-              >
-                <input
-                  type="checkbox"
-                  value="yes"
-                  class="sub-checkbox"
-                  id="env.products-to-migrate.connector-manager"
-                />
-                Connector Manager (Mender)</label
-              >
             </section>
 
             <section id="env.networking">
@@ -756,175 +548,14 @@
 
             <section id="env.domain.fqdn">
               <label for="env.domain.fqdn">
-                Under which domain would you like to host your dedicated
-                cloud?</label
-              >
-              <label
-                id="env.domain.labfolder.primary.fqdn.label"
-                for="env.domain.labfolder.primary.fqdn"
-                data-tooltip="You can omit the https:// part"
-                data-placement="left"
-              >
-                FQDN for Labfolder (primary-cluster):
-                <input
-                  type="text"
-                  placeholder="https://labfolder.{prod.}company.com"
-                  id="env.domain.labfolder.primary.fqdn"
-                  required
-                />
-              </label>
-
-              <label
-                id="env.domain.labregister.primary.fqdn.label"
-                for="env.domain.labregister.primary.fqdn"
-                data-tooltip="You can omit the https:// part"
-                data-placement="left"
-              >
-                FQDN for Labregister (primary-cluster):
-                <input
-                  type="text"
-                  placeholder="https://labregister.{prod.}company.com"
-                  id="env.domain.labregister.primary.fqdn"
-                  required
-                />
-              </label>
-
-              <label
-                id="env.domain.laboperator.primary.fqdn.label"
-                for="env.domain.laboperator.primary.fqdn"
-                data-tooltip="You can omit the https:// part"
-                data-placement="left"
-              >
-                FQDN for Laboperator (primary-cluster):
-                <input
-                  type="text"
-                  placeholder="https://laboperator.{prod.}company.com"
-                  id="env.domain.laboperator.primary.fqdn"
-                  required
-                />
-              </label>
-
-              <label
-                id="env.domain.laboperator-workflow-editor.primary.fqdn.label"
-                for="env.domain.laboperator-workflow-editor.primary.fqdn"
-                data-tooltip="You can omit the https:// part"
-                data-placement="left"
-              >
-                FQDN for Laboperator Workflow Editor (primary-cluster):
-                <input
-                  type="text"
-                  placeholder="https://workflow-editor.{prod.}company.com"
-                  id="env.domain.laboperator-workflow-editor.primary.fqdn"
-                  required
-                />
-              </label>
-
-              <label
-                id="env.domain.connector-manager.primary.fqdn.label"
-                for="env.domain.connector-manager.primary.fqdn"
-                data-tooltip="You can omit the https:// part"
-                data-placement="left"
-              >
-                FQDN for Laboperator Connector Manager (primary-cluster):
-                <input
-                  type="text"
-                  placeholder="https://connector-manager.{prod.}company.com"
-                  id="env.domain.connector-manager.primary.fqdn"
-                  required
-                />
-              </label>
-
-              <div id="env.domain.secondary.fqdns">
-                <label
-                  id="env.domain.labfolder.secondary.fqdn.label"
-                  for="env.domain.labfolder.secondary.fqdn"
-                  data-tooltip="You can omit the https:// part"
-                  data-placement="left"
+                Company domain. For example, https://*.{company-domain}
+                <input 
+                type="text"
+                id="env.domain"
+                placeholder="{company-domain}"
                 >
-                  FQDN for Labfolder (secondary-cluster):
-                  <input
-                    type="text"
-                    placeholder="https://labfolder.{test.}company.com"
-                    id="env.domain.labfolder.secondary.fqdn"
-                    required
-                  />
-                </label>
-
-                <label
-                id="env.domain.labregister.secondary.fqdn.label"
-                for="env.domain.labregister.secondary.fqdn"
-                data-tooltip="You can omit the https:// part"
-                data-placement="left"
+                </label
               >
-                FQDN for Labregister (secondary-cluster):
-                <input
-                  type="text"
-                  placeholder="https://labfolder.{test.}company.com"
-                  id="env.domain.labregister.secondary.fqdn"
-                  required
-                />
-              </label>
-
-                <label
-                  id="env.domain.laboperator.secondary.fqdn.label"
-                  for="env.domain.laboperator.secondary.fqdn"
-                  data-tooltip="You can omit the https:// part"
-                  data-placement="left"
-                >
-                  FQDN for Laboperator (secondary-cluster):
-                  <input
-                    type="text"
-                    placeholder="https://laboperator.{test.}company.com"
-                    id="env.domain.laboperator.secondary.fqdn"
-                    required
-                  />
-                </label>
-
-                <label
-                  id="env.domain.laboperator-workflow-editor.secondary.fqdn.label"
-                  for="env.domain.laboperator-workflow-editor.secondary.fqdn"
-                  data-tooltip="You can omit the https:// part"
-                  data-placement="left"
-                >
-                  FQDN for Laboperator Workflow Editor (secondary-cluster):
-                  <input
-                    type="text"
-                    placeholder="https://workflow-editor.{test.}company.com"
-                    id="env.domain.laboperator-workflow-editor.secondary.fqdn"
-                    required
-                  />
-                </label>
-
-                <label
-                  id="env.domain.connector-manager.secondary.fqdn.label"
-                  for="env.domain.connector-manager.secondary.fqdn"
-                  data-tooltip="You can omit the https:// part"
-                  data-placement="left"
-                >
-                  FQDN for Laboperator Connector Manager (secondary-cluster):
-                  <input
-                    type="text"
-                    placeholder="https://connector-manager.{test.}company.com"
-                    id="env.domain.connector-manager.secondary.fqdn"
-                    required
-                  />
-                </label>
-              </div>
-              <label id="env.domain.customer-domain-certificates">
-                <blockquote>
-                  The customer has to provide valid certificates for the
-                  selected domains. Options to provide certificates are
-                  <ol>
-                    <li>
-                      <mark
-                        >by automated certificate provisioning via cert-manager
-                        and Let's Encrypt;</mark
-                      >
-                    </li>
-                    <li><mark>or by providing cert files manually.</mark></li>
-                  </ol>
-                </blockquote>
-              </label>
             </section>
 
             <h3>Identity Provider</h3>
@@ -947,7 +578,7 @@
                   type="checkbox"
                   value="yes"
                   id="env.identity-provider.use-customer-identity-provider"
-                />Use a custom identity provider</label
+                />Use a custom identity provider. E.g.: Shibboleth, LDAP, Google, Microsoft...</label
               >
 
               <label
@@ -1023,7 +654,7 @@
                   </tr>
                   <tr>
                     <th scope="row">CPUs</th>
-                    <td>6 CPU</td>
+                    <td>12 CPU</td>
                     <td>With 2600 Mhz each</td>
                   </tr>
                   <tr>
@@ -1042,7 +673,7 @@
                   </tr>
                   <tr>
                     <th scope="row">CPUs</th>
-                    <td>6 CPU</td>
+                    <td>12 CPU</td>
                     <td>With 2600 Mhz each</td>
                   </tr>
                   <tr>
@@ -1120,17 +751,6 @@
                 >.</small
               >
 
-              <label for="env.cloud.aws.account">
-                <section id="env.cloud.aws.account">
-                  <label for="env.cloud.aws.account.name"
-                    ><input
-                      type="text"
-                      id="env.cloud.aws.account.name"
-                      placeholder="aws-acct-customer"
-                  /></label>
-                </section>
-              </label>
-
               <label for="env.cloud.aws.primary-cluster">
                 <h3>Primary Cluster: Initial dedicated AWS resources</h3>
                 <section id="env.cloud.aws.primary-cluster">
@@ -1173,8 +793,8 @@
                       </tr>
                       <tr>
                         <th scope="row">CPUs</th>
-                        <td>2 AMD64 per node</td>
-                        <td>6</td>
+                        <td>4 AMD64 per node</td>
+                        <td>12</td>
                         <td>CPU core</td>
                       </tr>
                       <tr>
@@ -1238,8 +858,8 @@
                       </tr>
                       <tr>
                         <th scope="row">CPUs</th>
-                        <td>2 AMD64 per node</td>
-                        <td>6</td>
+                        <td>4 AMD64 per node</td>
+                        <td>12</td>
                         <td>CPU core</td>
                       </tr>
                       <tr>
@@ -1259,179 +879,6 @@
                 </section>
               </label>
             </section>
-          </section>
-
-          <h2>Installation plan</h2>
-          <section
-            id="env.installation-plan.on-cloud"
-            class="hidden-until-ready"
-          >
-            <blockquote></blockquote>
-            <table>
-              <thead>
-                <tr>
-                  <th>Workpackage</th>
-                  <th>Step #</th>
-                  <th>Title</th>
-                  <th>Description</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>WP1</td>
-                  <td></td>
-                  <td>Intrastucture</td>
-                  <td>
-                    Provisioning and configuration of environment
-                    infrastructure.
-                  </td>
-                </tr>
-                <tr>
-                  <td>WP1</td>
-                  <td>1</td>
-                  <td>AWS account creation</td>
-                  <td>
-                    Creation of the AWS account prerequisites for a new
-                    dedicated cloud.
-                  </td>
-                </tr>
-                <tr>
-                  <td>WP1</td>
-                  <td>2</td>
-                  <td>Primary EKS cluster provisioning</td>
-                  <td>
-                    Creation of the primary cluster via our infrastructure
-                    provisioning repository.
-                  </td>
-                </tr>
-                <tr>
-                  <td>WP1</td>
-                  <td>3</td>
-                  <td>Secondary EKS cluster provisioning</td>
-                  <td>
-                    Creation of the secondary cluster via our infrastructure
-                    provisioning repository.
-                  </td>
-                </tr>
-                <tr>
-                  <td>WP1</td>
-                  <td>4</td>
-                  <td>Network peering to customer networks</td>
-                  <td>
-                    Setup of networking rules to connect the cluster to the
-                    customer network.
-                  </td>
-                </tr>
-                <tr>
-                  <td>WP1</td>
-                  <td>5</td>
-                  <td>Cluster DNS routing</td>
-                  <td>
-                    Setup to DNS routing to make the cluster accessible via DNS.
-                  </td>
-                </tr>
-                <tr>
-                  <td>WP2</td>
-                  <td></td>
-                  <td>Installation</td>
-                  <td>Installation of the Labforward Suite.</td>
-                </tr>
-                <tr>
-                  <td>WP2</td>
-                  <td>1</td>
-                  <td>Installation secondary environments</td>
-                  <td>
-                    Installation of the Labforward Suite to environments of the
-                    secondary cluster using Replicated.
-                  </td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <td>WP2</td>
-                  <td>2</td>
-                  <td>Installation primary environment</td>
-                  <td>
-                    Installation of the Labforward Suite to the primary cluster
-                    using Replicated.
-                  </td>
-                </tr>
-                <tr>
-                  <td>WP3</td>
-                  <td></td>
-                  <td>Configuration</td>
-                  <td>Configuration of the Labforward Suite.</td>
-                </tr>
-                <tr>
-                  <td>WP3</td>
-                  <td>1</td>
-                  <td>Application configuration</td>
-                  <td>
-                    Configuration of the Labforward applications via the Admin
-                    Console.
-                  </td>
-                </tr>
-                <tr>
-                  <td>WP3</td>
-                  <td>2</td>
-                  <td>Custom domain and certificate</td>
-                  <td>
-                    Configuration of the customer-provided domain and
-                    certificates.
-                  </td>
-                </tr>
-                <tr>
-                  <td>WP3</td>
-                  <td>3</td>
-                  <td>Custom interface: Email</td>
-                  <td>Configuration of the customer-provided SMTP server.</td>
-                </tr>
-                <tr>
-                  <td>WP3</td>
-                  <td>4</td>
-                  <td>Custom interface: Identity Provider</td>
-                  <td>
-                    Configuration of the customer-provided identity management.
-                  </td>
-                </tr>
-                <tr>
-                  <td>WP4</td>
-                  <td></td>
-                  <td>Migration</td>
-                  <td>
-                    Migration of application data from previous installations.
-                  </td>
-                </tr>
-                <tr>
-                  <td>WP4</td>
-                  <td>1</td>
-                  <td>Migration of Laboperator data</td>
-                  <td>
-                    Migration of application data from previous Laboperator,
-                    Mender, and Workflow Editor installations.
-                  </td>
-                </tr>
-                <tr>
-                  <td>WP4</td>
-                  <td>2</td>
-                  <td>Migration of Labfolder/Labregister data</td>
-                  <td>
-                    Migration of application data from previous installations.
-                  </td>
-                </tr>
-                <tr>
-                  <td>WP5</td>
-                  <td></td>
-                  <td>Validation</td>
-                  <td>Formal environment validation.</td>
-                </tr>
-                <tr>
-                  <td>WP5</td>
-                  <td>1</td>
-                  <td>Completion of validation documentation</td>
-                  <td>Formal environment validation.</td>
-                </tr>
-              </tbody>
-            </table>
           </section>
           <mark id="success" class="laq-hidden"
             >Information sent successfully!</mark
