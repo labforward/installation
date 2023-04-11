@@ -74,21 +74,6 @@
               : document.getElementById(fieldId);
           return field && field.checked == true;
         },
-        showHideMigrations: function () {
-          const labels = document.querySelectorAll(
-            'label[for^="env.products-to-migrate."]'
-          );
-          for (var i = 0; i < labels.length; ++i) {
-            var migration = labels[i].dataset.migration;
-            if (migration) {
-              if (view.state.migrate) {
-                view.show(labels[i]);
-              } else {
-                view.hide(labels[i]);
-              }
-            }
-          }
-        },
       };
 
       const google_form = {
@@ -146,24 +131,9 @@
             entry: "entry.569243513",
           },
           {
-            name: "products-to-migrate.none",
+            name: "products-to-migrate.none.yes",
             entry: "entry.1803285821",
-          },
-          {
-            name: "products-to-migrate.labfolder-labregister",
-            entry: "entry.907467583",
-          },
-          {
-            name: "products-to-migrate.laboperator",
-            entry: "entry.48913136",
-          },
-          {
-            name: "products-to-migrate.laboperator-workflow-editor",
-            entry: "entry.319096810",
-          },
-          {
-            name: "products-to-migrate.connector-manager",
-            entry: "entry.2112004302",
+            default: "no"
           },
           {
             name: "domain.use-customer-domain",
@@ -270,29 +240,9 @@
             view.state.cloud_based = null;
           }
 
-          if (view.isChecked("env.products-to-migrate.none")) {
-            view.state.migrate = false;
-          } else {
-            view.state.migrate = true;
-          }
+          view.state.labfolder_labregister = view.isChecked("env.products-to-install.labfolder-labregister")
 
-          if (view.isChecked("env.products-to-install.labfolder-labregister")) {
-            view.state.labfolder_labregister = true;
-          } else if (
-            view.isChecked("env.products-to-migrate.labfolder-labregister")
-          ) {
-            view.state.labfolder_labregister = true;
-          } else {
-            view.state.labfolder_labregister = false;
-          }
-
-          if (view.isChecked("env.products-to-install.laboperator")) {
-            view.state.laboperator = true;
-          } else if (view.isChecked("env.products-to-migrate.laboperator")) {
-            view.state.laboperator = true;
-          } else {
-            view.state.laboperator = false;
-          }
+          view.state.laboperator = view.isChecked("env.products-to-install.laboperator");
 
           laq.render();
         },
@@ -328,10 +278,7 @@
           if (
             view.isChecked(
               "env.products-to-install.laboperator-workflow-editor"
-            ) ||
-            view.isChecked(
-              "env.products-to-migrate.laboperator-workflow-editor"
-            )
+            ) 
           ) {
             view.show(
               "env.domain.laboperator-workflow-editor.primary.fqdn.label"
@@ -356,8 +303,7 @@
           }
 
           if (
-            view.isChecked("env.products-to-install.connector-manager") ||
-            view.isChecked("env.products-to-migrate.connector-manager")
+            view.isChecked("env.products-to-install.connector-manager") 
           ) {
             view.show("env.domain.connector-manager.primary.fqdn.label");
             view.show("env.domain.connector-manager.secondary.fqdn.label");
@@ -365,8 +311,6 @@
             view.hide("env.domain.connector-manager.primary.fqdn.label");
             view.hide("env.domain.connector-manager.secondary.fqdn.label");
           }
-
-          view.showHideMigrations();
 
           if (view.state.regulation_requirements) {
             view.show("env.domain.secondary.fqdns");
@@ -637,64 +581,26 @@
             <section id="env.products-to-migrate">
               <h3>Migration</h3>
               <label for="env.products-to-migrate"
-                >Is there an existing installation of Labforward products? If
-                so, which products will require a data migration to the new
-                environment?
+                >Do you want to migrate data from an existing Labforward's environment?
               </label>
-              <label for="env.products-to-migrate.none">
+              <label for="env.products-to-migrate.none.no">
                 <input
-                  type="checkbox"
-                  value="yes"
-                  id="env.products-to-migrate.none"
+                  type="radio"
+                  value="no"
+                  id="env.products-to-migrate.none.no"
+                  name="env.products-to-migrate.none"
                 />
-                No data migration needed
+                No. This is a new installation or I will connect to my current database.
               </label>
-              <label
-                data-migration="true"
-                for="env.products-to-migrate.labfolder-labregister"
-              >
+              <label for="env.products-to-migrate.none.yes">
                 <input
-                  type="checkbox"
+                  type="radio"
                   value="yes"
-                  id="env.products-to-migrate.labfolder-labregister"
+                  id="env.products-to-migrate.none.yes"
+                  name="env.products-to-migrate.none"
                 />
-                Labfolder/Labregister
+                Yes, I want to migrate my data.
               </label>
-              <label
-                data-migration="true"
-                for="env.products-to-migrate.laboperator"
-              >
-                <input
-                  type="checkbox"
-                  value="yes"
-                  id="env.products-to-migrate.laboperator"
-                />
-                Laboperator
-              </label>
-              <label
-                data-migration="true"
-                for="env.products-to-migrate.laboperator-workflow-editor"
-              >
-                <input
-                  type="checkbox"
-                  value="yes"
-                  class="sub-checkbox"
-                  id="env.products-to-migrate.laboperator-workflow-editor"
-                />
-                Laboperator Workflow Editor
-              </label>
-              <label
-                data-migration="true"
-                for="env.products-to-migrate.connector-manager"
-              >
-                <input
-                  type="checkbox"
-                  value="yes"
-                  class="sub-checkbox"
-                  id="env.products-to-migrate.connector-manager"
-                />
-                Connector Manager (Mender)</label
-              >
             </section>
 
             <section id="env.networking">
