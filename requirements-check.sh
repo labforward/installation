@@ -109,6 +109,6 @@ else
 	echo "Domain tested: $domain ";
 	echo "***********************************************************************";
 	echo "If you want support with the installation next steps, schedule an installation meeting and paste the output about, in between star lines, in the 'Result of the requirement-check script' field."; 
-	echo "Appointment form: https://calendar.app.google/do5gQLwfkJbTVD5A7 ";
+	echo "Installation meeting calendar: https://calendar.app.google/do5gQLwfkJbTVD5A7 ";
 fi
 
