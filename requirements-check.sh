@@ -24,7 +24,37 @@ function curl_request() {
 	validate "$response" "no" "  > "
 }
 
+function check_domain_resolution() {
+    local domain="$1"
+    ips=$(dig "$domain" +short | wc -l)
+    if [[ "$ips" == "0" ]]; then
+        validate "  > DNS resolution failed for $domain, FAILED."
+    fi
+}
+
 echo -n "Checking basic requirements"
+
+echo "In which domain Labforward applications are beeing installed ?" 
+read -e domain
+
+echo "Are you going to install LabFolder ? [yes/No]"
+read -e labfolder_enabled
+
+echo "Are you going to install LabOperator ? [yes/No]"
+read -e laboperator_enabled
+
+check_domain_resolution "account.$domain"
+if [[ "yes" == "$labfolder_enabled" ]]; then
+	check_domain_resolution "labfolder.$domain"
+fi
+if [[ "yes" == "$laboperator_enabled" ]]; then
+	check_domain_resolution "laboperator.$domain"
+fi
+check_domain_resolution "workflow-editor.$domain"
+check_domain_resolution "labregister.$domain"
+check_domain_resolution "fos.$domain"
+check_domain_resolution "admin-console.$domain"
+
 TESTS=$(builtin type -P awk > /dev/null || echo "We need awk command installed and in the user PATH. FAIL."; \
 builtin type -P curl > /dev/null || echo "We need curl command installed and in the user PATH. FAIL."; \
 builtin type -P free  > /dev/null || echo "We need free command installed and in the user PATH. FAIL."; \
