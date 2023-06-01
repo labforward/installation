@@ -79,7 +79,15 @@
       const google_form = {
         map_fields: [
           {
-            name: "customer.name",
+            name: "env.contact-name",
+            entry: "entry.744550944",
+          },
+          {
+            name: "env.contact-email",
+            entry: "entry.1710250634",
+          },
+          {
+            name: "customer.company",
             entry: "entry.2030448881",
           },
           {
@@ -369,14 +377,21 @@
           <section id="questionnaire" class="hidden-until-ready">
             <h2>Questionnaire</h2>
 
-            <h3>Customer</h3>
+            <h3>Contact Information</h3>
             <section id="env.customer">
-              Name:
-              <label for="env.customer.name"
-                ><input type="text" id="env.customer.name" required
+              Contact Name:
+              <label for="env.contact-name"
+                ><input type="text" id="env.contact-name" required
+              /></label>
+              Contact E-mail:
+              <label for="env.contact-email"
+                ><input type="text" id="env.contact-email" required
+              /></label>
+              Company Name:
+              <label for="env.customer-name"
+                ><input type="text" id="env.customer-name" required
               /></label>
             </section>
-
             <section id="env.installation.type">
               <label for="env.installation.type">
                 <h3>Installation type</h3>
