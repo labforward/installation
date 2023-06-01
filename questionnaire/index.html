@@ -79,8 +79,16 @@
       const google_form = {
         map_fields: [
           {
-            name: "customer.name",
-            entry: "entry.2030448881",
+            name: "customer.contact-name",
+            entry: "entry.1172155676",
+          },
+          {
+            name: "customer.contact-email",
+            entry: "entry.413386756",
+          },
+          {
+            name: "customer.company",
+            entry: "entry.1702543330",
           },
           {
             name: "installation.cloud-based",
@@ -369,14 +377,21 @@
           <section id="questionnaire" class="hidden-until-ready">
             <h2>Questionnaire</h2>
 
-            <h3>Customer</h3>
+            <h3>Contact Information</h3>
             <section id="env.customer">
-              Name:
-              <label for="env.customer.name"
-                ><input type="text" id="env.customer.name" required
+              Contact Name:
+              <label for="env.customer.contact-name"
+                ><input type="text" id="env.customer.contact-name" required
+              /></label>
+              Contact E-mail:
+              <label for="env.customer.contact-email"
+                ><input type="text" id="env.customer.contact-email" required
+              /></label>
+              Company Name:
+              <label for="env.customer.company"
+                ><input type="text" id="env.customer.company" required
               /></label>
             </section>
-
             <section id="env.installation.type">
               <label for="env.installation.type">
                 <h3>Installation type</h3>
@@ -654,8 +669,8 @@
                   </tr>
                   <tr>
                     <th scope="row">CPUs</th>
-                    <td>8 CPU</td>
-                    <td>With 2600 Mhz each</td>
+                    <td>4 CPUs</td>
+                    <td>With 2500+ Mhz each</td>
                   </tr>
                   <tr>
                     <th scope="row">Disk Space</th>
@@ -673,8 +688,8 @@
                   </tr>
                   <tr>
                     <th scope="row">CPUs</th>
-                    <td>8 CPU</td>
-                    <td>With 2600 Mhz each</td>
+                    <td>4 CPUs</td>
+                    <td>With 2500+ Mhz each</td>
                   </tr>
                   <tr>
                     <th scope="row">Disk Space</th>
@@ -687,13 +702,13 @@
                 <tbody data-products="LF+LR+LO">
                   <tr>
                     <th scope="row">Memory</th>
-                    <td>24 GB</td>
+                    <td>32 GB</td>
                     <td>Available memory before installation</td>
                   </tr>
                   <tr>
                     <th scope="row">CPUs</th>
-                    <td>12 CPU</td>
-                    <td>With 2600 Mhz each</td>
+                    <td>8 CPUs</td>
+                    <td>With 2500+ Mhz each</td>
                   </tr>
                   <tr>
                     <th scope="row">Disk Space</th>
@@ -794,7 +809,7 @@
                       <tr>
                         <th scope="row">CPUs</th>
                         <td>4 AMD64 per node</td>
-                        <td>8</td>
+                        <td>4</td>
                         <td>CPU core</td>
                       </tr>
                       <tr>
@@ -859,7 +874,7 @@
                       <tr>
                         <th scope="row">CPUs</th>
                         <td>4 AMD64 per node</td>
-                        <td>8</td>
+                        <td>4</td>
                         <td>CPU core</td>
                       </tr>
                       <tr>
