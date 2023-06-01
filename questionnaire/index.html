@@ -302,18 +302,13 @@
           var payload = "";
           for (var i = 0; i < google_form.map_fields.length; i++) {
             var google_field = google_form.map_fields[i];
-            console.log('form  field: ' + google_field.name);
             var field = document.getElementById("env." + google_field.name);
             if (laq.useField(field)) {
-              console.log(field);
               var value = field.value;
               if (value == null){
                 value = google_field.default;
               }
               payload += google_field.entry + "=" + value + "&";
-              console.log('Value ' + value);
-            } else {
-              console.log('Not sending: ' + google_field.name);
             }
           }
           return payload;
