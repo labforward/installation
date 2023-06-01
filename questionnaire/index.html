@@ -79,16 +79,16 @@
       const google_form = {
         map_fields: [
           {
-            name: "customer.name",
-            entry: "entry.2030448881",
+            name: "customer.contact-name",
+            entry: "entry.1172155676",
           },
           {
             name: "customer.contact-email",
-            entry: "entry.1710250634",
+            entry: "entry.413386756",
           },
           {
             name: "customer.company",
-            entry: "entry.1215604624",
+            entry: "entry.1702543330",
           },
           {
             name: "installation.cloud-based",
@@ -302,13 +302,18 @@
           var payload = "";
           for (var i = 0; i < google_form.map_fields.length; i++) {
             var google_field = google_form.map_fields[i];
+            console.log('form  field: ' + google_field.name);
             var field = document.getElementById("env." + google_field.name);
             if (laq.useField(field)) {
+              console.log(field);
               var value = field.value;
               if (value == null){
                 value = google_field.default;
               }
               payload += google_field.entry + "=" + value + "&";
+              console.log('Value ' + value);
+            } else {
+              console.log('Not sending: ' + google_field.name);
             }
           }
           return payload;
@@ -380,16 +385,16 @@
             <h3>Contact Information</h3>
             <section id="env.customer">
               Contact Name:
-              <label for="env.contact-name"
-                ><input type="text" id="env.contact-name" required
+              <label for="env.customer.contact-name"
+                ><input type="text" id="env.customer.contact-name" required
               /></label>
               Contact E-mail:
-              <label for="env.contact-email"
-                ><input type="text" id="env.contact-email" required
+              <label for="env.customer.contact-email"
+                ><input type="text" id="env.customer.contact-email" required
               /></label>
               Company Name:
-              <label for="env.company"
-                ><input type="text" id="env.company" required
+              <label for="env.customer.company"
+                ><input type="text" id="env.customer.company" required
               /></label>
             </section>
             <section id="env.installation.type">
