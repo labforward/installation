@@ -71,13 +71,13 @@ TEST_AVAILABLE_SPACE=$(df -Pk /var /var/lib /var/lib/kubelet 2> /dev/null | tail
 validate "$TEST_AVAILABLE_SPACE"
 
 echo "Checking hardware specs"
-TEST_CPU_CORES=$(lscpu 2>/dev/null| awk -F: 'IGNORECASE = 1;/^CPU\(s\):/{cores=$2} END { if (cores -2 < 0) print "Not enough cores. At least 2 cores needed. \n"; else printf "Enought cores: %i - OK. \n", cores; } ' | grep -i cores)
+TEST_CPU_CORES=$(lscpu 2>/dev/null| awk -F: 'IGNORECASE = 1;/^CPU\(s\):/{vcores=$2; minimumVCores=4} END { if (vcores < minimumVCores) printf "Not enough vcores. At least %d vcores needed. Found only %d \n", minimumVCores, vcores; else printf "Enought vcores: %i - OK. \n", vcores; } ' | grep -i cores)
 validate "$TEST_CPU_CORES" "hide"
 
 TEST_CPU_CLOCK=$(lscpu 2>/dev/null| awk -F: 'IGNORECASE = 1;/MHz:/ { mhz=$2 } IGNORECASE = 1;/max MHz:/ {max=$2 } END { if (max > mhz) mhz = max; if (mhz < 2600) printf "Not enough clock. Minimum required is 2600, measured: %d Mhz\n", mhz; else printf "Enough clock speed: %d Mhz - OK. \n", mhz } ' | grep -i Mhz)
 validate "$TEST_CPU_CLOCK" "hide"
 
-TEST_MEM=$(free --giga | awk -F' ' '/^Mem:/ {total=$2} END { if (total < 16) printf "Not enough total memory. 16GB is the minimun requirement. Memory found: %d FAILED.\n", total; else printf "Total memory: %s - OK. \n", total ; exit total < 16}')
+TEST_MEM=$(free --giga | awk -F' ' '/^Mem:/ {total=$2; minimumGB=4} END { if (total < minimumGB) printf "Not enough total memory. %d GB is the minimun requirement. Memory found: %d FAILED.\n", minimumGB, total; else printf "Total memory: %s - OK. \n", total ; exit total < minimumGB}')
 validate "$TEST_MEM"
 
 
