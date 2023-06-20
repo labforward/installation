@@ -160,6 +160,10 @@
             entry: "entry.667719526",
           },
           {
+            name: "identity-provider.specific-details",
+            entry: "entry.1118377995",
+          },
+          {
             name: "identity-provider.use-customer-identity-provider",
             entry: "entry.86164800",
           },
@@ -281,9 +285,21 @@
             view.show(
               "env.identity-provider.use-customer-identity-provider.warning"
             );
+            view.show(
+              "env.identity-provider.specific-details.label"
+            );
+            view.show(
+              "env.identity-provider.specific-details"
+            );
           } else {
             view.hide(
               "env.identity-provider.use-customer-identity-provider.warning"
+            );
+            view.hide(
+              "env.identity-provider.specific-details.label"
+            );
+            view.hide(
+              "env.identity-provider.specific-details"
             );
           }
 
@@ -595,6 +611,15 @@
                   id="env.identity-provider.use-customer-identity-provider"
                 />Use a custom identity provider. E.g.: Shibboleth, LDAP, Google, Microsoft...</label
               >
+
+              <label for="env.identity-provider.specific-details"
+                id="env.identity-provider.specific-details.label">
+                  Please provide specific details about the Identity Provider (Azure AD, Shibboleth, OpenID Connect, LDAP Version)
+                  <input 
+                  type="text"
+                  id="env.identity-provider.specific-details"
+                  >
+              </label>
 
               <label
                 id="env.identity-provider.use-customer-identity-provider.warning"
