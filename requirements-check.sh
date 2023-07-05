@@ -92,7 +92,7 @@ validate "$TEST_CPU_CORES" "hide"
 TEST_CPU_CLOCK=$(lscpu 2>/dev/null| awk -F: 'IGNORECASE = 1;/MHz:/ { mhz=$2 } IGNORECASE = 1;/max MHz:/ {max=$2 } END { if (max > mhz) mhz = max; if (mhz < 2600) printf "Not enough clock. Minimum required is 2600, measured: %d Mhz\n", mhz; else printf "Enough clock speed: %d Mhz - OK. \n", mhz } ' | grep -i Mhz)
 validate "$TEST_CPU_CLOCK" "hide"
 
-check_memory_gigabytes 100
+check_memory_gigabytes 4
 
 echo "Network access"
 
