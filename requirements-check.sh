@@ -17,6 +17,13 @@ function validate() {
 	fi
 }
 
+function check_memory_gigabytes() {
+	minimum=${1:-4}
+	builtin type -P free  > /dev/null || validate "We need the command 'free' installed and in the user PATH, FAILED."; \
+	TEST_MEM=$(builtin type -P free  > /dev/null && (free --giga && echo "Minimum: $minimum") | awk -F' ' '/^Mem:/ {total=$2}; /^Minimum:/ {minimumGB=$2};  END { if (total < minimumGB) printf "Not enough total memory. %d GB is the minimum requirement. Memory found: %d FAILED.\n", minimumGB, total; else printf "Total memory: %s - OK. \n", total ; exit total < minimumGB}')
+	validate "$TEST_MEM"
+}
+
 function curl_request() {
 	URL=$1
 	
@@ -34,6 +41,14 @@ function check_domain_resolution() {
     fi
 }
 
+function check_resolv_conf() {
+	search=($(grep -E '^search' /etc/resolv.conf | awk '{print NF - 1}'))
+	if (( search > 3 )); then
+		validate "  > resolv.conf has too many search domains FAILED."
+	else
+		echo "  > resolv.conf has $search search domain names. This is OK."
+	fi
+}
 
 echo "In which domain Labforward applications are beeing installed ?" 
 read -e domain
@@ -46,6 +61,7 @@ read -e laboperator_enabled
 
 echo "Start copying from here"
 echo "Testing domains"
+check_resolv_conf
 check_domain_resolution "account.$domain"
 check_domain_resolution "admin-console.$domain"
 if [[ "yes" == "$labfolder_enabled" ]]; then
@@ -60,8 +76,7 @@ check_domain_resolution "labregister.$domain"
 check_domain_resolution "fos.$domain"
 
 TESTS=$(builtin type -P awk > /dev/null || echo "We need awk command installed and in the user PATH. FAILED."; \
-builtin type -P curl > /dev/null || echo "We need curl command installed and in the user PATH. FAILED."; \
-builtin type -P free  > /dev/null || echo "We need free command installed and in the user PATH. FAILED."; \
+builtin type -P curl > /dev/null || echo "We need curl command installed and in the user PATH.\n  > command curl not found FAILED."; \
 builtin type -P lscpu > /dev/null || echo "We need lscpu command installed and in the user PATH. FAILED." )
 
 validate "$TESTS"
@@ -77,9 +92,7 @@ validate "$TEST_CPU_CORES" "hide"
 TEST_CPU_CLOCK=$(lscpu 2>/dev/null| awk -F: 'IGNORECASE = 1;/MHz:/ { mhz=$2 } IGNORECASE = 1;/max MHz:/ {max=$2 } END { if (max > mhz) mhz = max; if (mhz < 2600) printf "Not enough clock. Minimum required is 2600, measured: %d Mhz\n", mhz; else printf "Enough clock speed: %d Mhz - OK. \n", mhz } ' | grep -i Mhz)
 validate "$TEST_CPU_CLOCK" "hide"
 
-TEST_MEM=$(free --giga | awk -F' ' '/^Mem:/ {total=$2; minimumGB=4} END { if (total < minimumGB) printf "Not enough total memory. %d GB is the minimun requirement. Memory found: %d FAILED.\n", minimumGB, total; else printf "Total memory: %s - OK. \n", total ; exit total < minimumGB}')
-validate "$TEST_MEM"
-
+check_memory_gigabytes 100
 
 echo "Network access"
 
