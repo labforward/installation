@@ -30,3 +30,5 @@ Example. Running on an oraclelinux image:
 ## On running docker containers
 	docker exec <<CONTAINER_ID>> bash -c "bash <(curl -sL https://raw.githubusercontent.com/labforward/installation/main/requirements-check.sh )"
 
+ [![asciicast](https://asciinema.org/a/6WGUwvCfkr1IkkDXORw6U2qH1.svg)](https://asciinema.org/a/6WGUwvCfkr1IkkDXORw6U2qH1)
+
