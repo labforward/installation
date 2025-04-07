@@ -38,10 +38,10 @@ function check_domain_resolution() {
 echo "In which domain Labforward applications are beeing installed ?" 
 read -e domain
 
-echo "Are you going to install LabFolder ? [yes/No]"
+echo "Are you going to install Labfolder ? [yes/No]"
 read -e labfolder_enabled
 
-echo "Are you going to install LabOperator ? [yes/No]"
+echo "Are you going to install Laboperator ? [yes/No]"
 read -e laboperator_enabled
 
 echo "Start copying from here"
